@@ -1,0 +1,10 @@
+{
+  "chainId": 31337,
+  "simulated": true,
+  "contracts": 10,
+  "setupTransactions": 29,
+  "openingTick": -138180,
+  "approximateOpeningFdvImd": 998.2030283995315,
+  "initialRealImdReserve": "0",
+  "mainnetTransactions": 0
+}

@@ -1,0 +1,36 @@
+{
+  "dependencies": {
+    "@x402/core": "2.28.0",
+    "@x402/evm": "2.28.0",
+    "ethers": "6.17.0",
+    "fastify": "5.12.5",
+    "pg": "8.23.1",
+    "viem": "2.57.3"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node backend/server.mjs",
+    "plan": "node scripts/deployment-plan.mjs",
+    "migrate": "node backend/migrate.mjs",
+    "index": "node --env-file=.env.api backend/indexer.mjs",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs",
+    "compile": "node scripts/compile.mjs",
+    "worker": "node --env-file=.env.worker backend/worker.mjs",
+    "preview": "node backend/local-preview.mjs",
+    "attestor": "node --env-file=.env.attestor backend/attestor.mjs",
+    "api": "node --env-file=.env.api backend/server.mjs"
+  },
+  "overrides": {
+    "tmp": "0.2.7"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@openzeppelin/contracts": "5.4.0",
+    "@uniswap/v4-core": "1.0.2",
+    "@uniswap/v4-periphery": "1.0.3",
+    "hardhat": "3.18.1",
+    "prettier": "3.6.2",
+    "prettier-plugin-solidity": "2.2.0",
+    "solc": "0.8.26"
+  }
+}

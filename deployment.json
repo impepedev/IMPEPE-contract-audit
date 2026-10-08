@@ -1,0 +1,22 @@
+{
+  "chainId": 1,
+  "deployer": "0x61aEFdAAa5FA9ac74AA0051238Fd4a37B1d24148",
+  "operator": "0x9A6dA9E6f2BEEF402C6A23E2fA1ee7c003cd31b4",
+  "protocolRecipient": "0x61aEFdAAa5FA9ac74AA0051238Fd4a37B1d24148",
+  "fixedSupply": "1000000000",
+  "publicLiquidityBps": 9800,
+  "deployerBps": 200,
+  "imdAddress": "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+  "poolManager": "0x000000000004444c5dc75cB358380D2e3dE08A90",
+  "create2Factory": null,
+  "artifactAttestor": null,
+  "artifactTrustApproved": true,
+  "deployerNonce": null,
+  "jobBudgetImd": "0.5",
+  "settlementBlocks": 128,
+  "liquidityModel": "single_sided_permanent",
+  "targetOpeningFdvImd": "1000",
+  "tickSpacing": 60,
+  "auditApproved": false,
+  "legalReviewApproved": false
+}

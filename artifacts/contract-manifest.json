@@ -1,0 +1,89 @@
+{
+  "status": "v1.1_source_freeze_pending_external_deployment_inputs_and_audit",
+  "compiler": "0.8.26+commit.8a97fa7a.Emscripten.clang",
+  "evm": "cancun",
+  "optimizerRuns": 200,
+  "proxyUpgradeable": false,
+  "creationControllerReplaceable": true,
+  "migrationDelaySeconds": 172800,
+  "tokenAndLiquidityImmutable": true,
+  "deployedContracts": 10,
+  "renderer": "embedded SVGRenderer library",
+  "compilerInputSha256": "6db9c1c324effd29be8e593722c5b632cb769975375d6288275deb7efb150341",
+  "packageLockSha256": "055316dc5c02e4a82e0fef13ed09c995748e348c3b86b4dc79e55f16e7069cff",
+  "sources": {
+    "contracts/ProjectToken.sol": "6fce55ba41cb6b49d5c3dc432f63022c31be64ca1f828f22a210901b0d8a3f69",
+    "contracts/LiquidityBootstrap.sol": "238903a531a7e6ab1122ab6ee839765fbbbcd9c92797f406a3f6c1c795a9c410",
+    "contracts/IMPEPEHook.sol": "f7f7b3326cf84745ea42e2f1df8f9ee359e6f7af194aef03bc1377f2a5b43939",
+    "contracts/FeeRouter.sol": "d15f34d75605e681ec3ac02ad19a8ed1555f9b7e371ffc020456f3f88a5a5464",
+    "contracts/CreationController.sol": "e6025e31a71c9e20d7dc70786701248a270a31ba39a649750212ba41ba53486d",
+    "contracts/SwarmCollection.sol": "bfc2f0c2f2c1d299a511a04a7a4a12d5d9961d3639b2334e75fc9be2c014b02c",
+    "contracts/RewardsDistributor.sol": "2496f3c211a2b3b8e778f9600d03aa69391af739143534981f1de37d0703a928",
+    "contracts/ReceiptVerifier.sol": "73d0fee9881e0cb57d06967105472f2a7afab7fe6fa7c6403527e4d586ab8782",
+    "contracts/IMPEPESwapRouter.sol": "572307f375ea3002f51309348d65a5ef9498a22cfba6cb97a17bef1d393f02cd",
+    "contracts/HookFactory.sol": "6508527d44f8f2a8721278db92e2bf691727a3e1be753255be0e6f48f6c75084",
+    "contracts/SVGRenderer.sol": "eeac244267987b0ce865aba4cc0d02a4163725436c7256700cb1e2deb63d0768"
+  },
+  "contracts": {
+    "ProjectToken": {
+      "abiSha256": "88d1b33534853ed8a19d08e79b61b50632da2b0f7349b1f8473d8a003a128730",
+      "creationBytecodeSha256": "b3e03f52896cbb4497871963a3b6948bc594887a71f8811b24adc3c092e175b0",
+      "runtimeBytecodeSha256": "d0fbb67350b708f848cce37d60aa2eabb5366ffd9da7f2171ceec095ea8a9e91",
+      "runtimeBytes": 4272
+    },
+    "LiquidityBootstrap": {
+      "abiSha256": "e2799b4a8395c3e41203c977d000f76a6f90006a9c230d3cb9d7172ed9da37fe",
+      "creationBytecodeSha256": "ede89952fd2a95226edaec275cba68450db96b952caa1e6b79f4b9f912741f4d",
+      "runtimeBytecodeSha256": "57f8ddad42168ba1d0a78b73813dd327df005290b6d48bfd36200e4a75baafa8",
+      "runtimeBytes": 6979
+    },
+    "IMPEPEHook": {
+      "abiSha256": "0b72315a167710e15e17376f93923775a81ddd799d3f66a6afa8254f3d68295c",
+      "creationBytecodeSha256": "684c3d8b3f394fecf1953a54263323db6f6dea0075584ec1d484298919cc59fb",
+      "runtimeBytecodeSha256": "4564932c25faecaca5958875e748eb54b6b0cd0ff5f1ee6799837d00d896d74c",
+      "runtimeBytes": 6146
+    },
+    "FeeRouter": {
+      "abiSha256": "e8bbbffeeb6eaafc455facce521d585157604a87f3577d75fc6d7292425b15c8",
+      "creationBytecodeSha256": "ae16baf5ef5bfed80d54660f6d9a389fc18aa3b82ca12e623f6b276e3c8c5c8f",
+      "runtimeBytecodeSha256": "825ed048004f0bb9bce8d9c5f7155f9809474d7fdaf992aced0d472b74cbe0c8",
+      "runtimeBytes": 5669
+    },
+    "CreationController": {
+      "abiSha256": "1700882281e18a5a339e0efda21eed823e807bb2e814264fc8246ffafc187b3e",
+      "creationBytecodeSha256": "bed6656c0f3e60247e7c9533e40bbf8ce1580d0c8d836749a4c829771d53a4f7",
+      "runtimeBytecodeSha256": "2c05228fc8dfc022fcfb1323807bfaffc2ac51e4d3e401cefbcbb0148ecc6e5e",
+      "runtimeBytes": 19987
+    },
+    "SwarmCollection": {
+      "abiSha256": "b29556ea74dd9bc1be6c09812371f942264848ab9eaab1c62b478ea7f9b33686",
+      "creationBytecodeSha256": "b1899af8e514f394ba7ccb269e838d4bb7bfe22ac5cf9327f52760fc04ea4147",
+      "runtimeBytecodeSha256": "055aa00416ae57e0522cfc6bb8c475a1595f7afd66723c11aa28ff12d8e626d6",
+      "runtimeBytes": 10278
+    },
+    "RewardsDistributor": {
+      "abiSha256": "7cc58090777df47ad4cb1d03fdfbb82b10ec9b6a2340cdf4d3cc1c7dae2afb40",
+      "creationBytecodeSha256": "a021cf97d0c53fbdf7d4d662306c828fdb034a63ab73a8fa493fbae553379c82",
+      "runtimeBytecodeSha256": "190f935a9b5e3a742ea6d3cb3832229145e23705b357d357af49c6e159c0936e",
+      "runtimeBytes": 3509
+    },
+    "ReceiptVerifier": {
+      "abiSha256": "0ae541870d426ef4a7cc62d9e44cd820b835689380edacc9cf6a6b427e812eff",
+      "creationBytecodeSha256": "a7946edd6763b47d254a9eb7f9efcc1cc872c8a6f143eecf8df277028ade14c1",
+      "runtimeBytecodeSha256": "061121c85bc00f7218b86a1fffaa1bd4eccd3882f96c5f09dd5b51d7241073b9",
+      "runtimeBytes": 3580
+    },
+    "IMPEPESwapRouter": {
+      "abiSha256": "f2f699ffacbb6c91a2f8a269e9a14ba0a0e9f97836a65d07f2d214febc3e6632",
+      "creationBytecodeSha256": "29c982e8975d40c410107933585deb35e65bb56b5ef24ac2105c706cdd1cee34",
+      "runtimeBytecodeSha256": "765b9c3555427893cc64cf43d332fe630e23e839d60e89dacb90dea82b127ce9",
+      "runtimeBytes": 3601
+    },
+    "HookFactory": {
+      "abiSha256": "8af60be9dd6968279eb781987ab5984a5eac9c14454cf68137528efb598af472",
+      "creationBytecodeSha256": "e7464cc4982fc17914b4f6d561368bd95060a97c4bcef19f29a69fa8a6273732",
+      "runtimeBytecodeSha256": "3e17bcc2499536960163d3cf19b34cab6a0f2b224625c41f8fce23f25e3e7680",
+      "runtimeBytes": 632
+    }
+  }
+}

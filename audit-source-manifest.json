@@ -1,0 +1,241 @@
+{
+  "purpose": "IMD audit source snapshot",
+  "files": [
+    {
+      "path": "contracts/CreationController.sol",
+      "sha256": "e6025e31a71c9e20d7dc70786701248a270a31ba39a649750212ba41ba53486d"
+    },
+    {
+      "path": "contracts/FeeRouter.sol",
+      "sha256": "d15f34d75605e681ec3ac02ad19a8ed1555f9b7e371ffc020456f3f88a5a5464"
+    },
+    {
+      "path": "contracts/HookFactory.sol",
+      "sha256": "6508527d44f8f2a8721278db92e2bf691727a3e1be753255be0e6f48f6c75084"
+    },
+    {
+      "path": "contracts/IMPEPEHook.sol",
+      "sha256": "f7f7b3326cf84745ea42e2f1df8f9ee359e6f7af194aef03bc1377f2a5b43939"
+    },
+    {
+      "path": "contracts/IMPEPESwapRouter.sol",
+      "sha256": "572307f375ea3002f51309348d65a5ef9498a22cfba6cb97a17bef1d393f02cd"
+    },
+    {
+      "path": "contracts/LiquidityBootstrap.sol",
+      "sha256": "238903a531a7e6ab1122ab6ee839765fbbbcd9c92797f406a3f6c1c795a9c410"
+    },
+    {
+      "path": "contracts/ProjectToken.sol",
+      "sha256": "6fce55ba41cb6b49d5c3dc432f63022c31be64ca1f828f22a210901b0d8a3f69"
+    },
+    {
+      "path": "contracts/ReceiptVerifier.sol",
+      "sha256": "73d0fee9881e0cb57d06967105472f2a7afab7fe6fa7c6403527e4d586ab8782"
+    },
+    {
+      "path": "contracts/RewardsDistributor.sol",
+      "sha256": "2496f3c211a2b3b8e778f9600d03aa69391af739143534981f1de37d0703a928"
+    },
+    {
+      "path": "contracts/SVGRenderer.sol",
+      "sha256": "eeac244267987b0ce865aba4cc0d02a4163725436c7256700cb1e2deb63d0768"
+    },
+    {
+      "path": "contracts/SwarmCollection.sol",
+      "sha256": "bfc2f0c2f2c1d299a511a04a7a4a12d5d9961d3639b2334e75fc9be2c014b02c"
+    },
+    {
+      "path": "tests/contracts.test.mjs",
+      "sha256": "62ace9bd1a1dda19c394f510cf42cf37d5be4bed9c47dafcbfc812e935560102"
+    },
+    {
+      "path": "tests/opening-price.test.mjs",
+      "sha256": "1e315a7aefbf6dd9bb12bb0f1a2161d407cdfce1897b681840033546895f3792"
+    },
+    {
+      "path": "tests/evidence.test.mjs",
+      "sha256": "c5c76e8f9d3cd742f33f09e8f61de4ff13768e1a3e2b2034de45dafe496005f6"
+    },
+    {
+      "path": "tests/backend.test.mjs",
+      "sha256": "32306a097dda9f99011a8f9c59af17b10cdd28b0df4c7205f27c2f1aa2d5095d"
+    },
+    {
+      "path": "tests/swap-assets.test.mjs",
+      "sha256": "7621160c25200c4252388ef98b96285938e153072b837fa503d79dd5cbfd692b"
+    },
+    {
+      "path": "tests/contracts/TestHarness.sol",
+      "sha256": "b552a1139e4c5fe636217a79b77b61a5cd879e42e00289b9b3a88701ddb65748"
+    },
+    {
+      "path": "tests/fixtures/art-fixture.mjs",
+      "sha256": "6c4e4a0c8a54dbb7ad01eff7149bf4db2b7c128259567f9ecf71ddfe69fc6f80"
+    },
+    {
+      "path": "backend/accounting.mjs",
+      "sha256": "26759dcf069c3cad692300eecc3fef2739ec290dc0040bda75d6b4a66d7d3ad9"
+    },
+    {
+      "path": "backend/airdrop-preview.mjs",
+      "sha256": "b94885591de307e42016d3d9121ac92980b70ffdaceca3f3bd21d830cdacda8d"
+    },
+    {
+      "path": "backend/airdrop.mjs",
+      "sha256": "0306ad5525814c94ba97e199cc4626a9e3436c872d3702f234f2a1655410c84c"
+    },
+    {
+      "path": "backend/art.mjs",
+      "sha256": "1bb0a24bd382de4684adf7a5048e8ab0a337f6e0a1ddfab751307c7dd9fbff69"
+    },
+    {
+      "path": "backend/attestor.mjs",
+      "sha256": "8a5fb425c362d890b7bc5a9e6fe3827bccca0ecb01e238a01296960fa75eb23c"
+    },
+    {
+      "path": "backend/config.mjs",
+      "sha256": "847a0c5df589ba6a199611c577a203f3e0076761517670449f32b61015351eb7"
+    },
+    {
+      "path": "backend/db.mjs",
+      "sha256": "1448eaa1e6f2aa8955c8c3adf53bf768e4b565003d1c6bba9a07b40723e4bac8"
+    },
+    {
+      "path": "backend/evidence.mjs",
+      "sha256": "bef58c40544480bf6b07f3db15a88f2f50b076f476cc82fb7a44b608dad16d31"
+    },
+    {
+      "path": "backend/imd.mjs",
+      "sha256": "029478ac45cfd9e2ece086b58b7dee9ba750011a72d41151b11c8646abf2b965"
+    },
+    {
+      "path": "backend/indexer.mjs",
+      "sha256": "f128fa8fb4ee00d1ebbab70fffbd3affa0c7da7b8b7f6c783bf7e151fe30c7d0"
+    },
+    {
+      "path": "backend/jobs.mjs",
+      "sha256": "c60a29d2cdbc934218b8eccf6acca89b6a4dd26de96c91e8d7948602656cad49"
+    },
+    {
+      "path": "backend/local-preview.mjs",
+      "sha256": "414f18b66289e95d6f8ae91944943f2c87d236dcf7f20c53e963545ec07d8c65"
+    },
+    {
+      "path": "backend/migrate.mjs",
+      "sha256": "0d594adb6517fa794b450df2f9944bfff3d9c19a05588742a11a1de877030654"
+    },
+    {
+      "path": "backend/payment.mjs",
+      "sha256": "f7234d942f6e68d9721ecc1c836fdb7272a959f9a21f29d2794e5bce900c56b3"
+    },
+    {
+      "path": "backend/schema.sql",
+      "sha256": "88d4c04484498dd85eb8e32c7f9e7a8301869acd0e4961db0fc88dd3f4c089ea"
+    },
+    {
+      "path": "backend/server.mjs",
+      "sha256": "86175891784bf472b00fa9abe9333dff4134804bd05cf58fd9383f9fe1267235"
+    },
+    {
+      "path": "backend/service.mjs",
+      "sha256": "ad691c60158a5fef20fe2582176f3ddcac4f09fb2977be2d42d2dd586e8dcf57"
+    },
+    {
+      "path": "backend/submit-art.mjs",
+      "sha256": "04a22d0d90c4617fe9fc4211bd47495fb77a9b7fa0c5bd6b03e02cf942cab542"
+    },
+    {
+      "path": "backend/worker.mjs",
+      "sha256": "797dfee712183fea93cb219ac602b07b13df4ce62ee716cd4735c698f4970ded"
+    },
+    {
+      "path": "package.json",
+      "sha256": "61012abf6c1589698a478ae5369959aed800c455479b2a0de588b6c18bd104c1"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "055316dc5c02e4a82e0fef13ed09c995748e348c3b86b4dc79e55f16e7069cff"
+    },
+    {
+      "path": "hardhat.config.js",
+      "sha256": "121f5e5056e0816635d70b7d91046606b59dd170ac55ca5d1ffbbeb01923dfaa"
+    },
+    {
+      "path": "deployment.json",
+      "sha256": "7f3b83d777d9b3f2e3e754a44e4845ad225879f2472389402783a73a0160153f"
+    },
+    {
+      "path": "README.md",
+      "sha256": "ba22ee30ffb98185f81da6c7a5f7a28917ea784f85a2512a9cd65612d4b57b24"
+    },
+    {
+      "path": "THREAT_MODEL.md",
+      "sha256": "b6f65dd2fff33958d5713397bd72a27dfb91a573ff8e9aba0180ef4a82febbcc"
+    },
+    {
+      "path": "CONTRACT_FINALIZATION.md",
+      "sha256": "4fad9627a0ed3d25018479d1738ed1a6805667254077ec5691041837120df60c"
+    },
+    {
+      "path": "EMERGENCY_MIGRATION.md",
+      "sha256": "5967f9ecb5bd721cf1a12f58c1a839ee68312574f24a27bdb5a5e10f8945afd9"
+    },
+    {
+      "path": "LAUNCH_MODEL.md",
+      "sha256": "58ddc688bfe3d6853a345fc48c182fb33f0b77c1391a3cc59689338bece5f9b8"
+    },
+    {
+      "path": "LAUNCH_READINESS.md",
+      "sha256": "d03f7030a7279280aea8285faf618e39afc6f0314ec373729d85902c9a4742e5"
+    },
+    {
+      "path": "scripts/compile.mjs",
+      "sha256": "cd0f5dc5cb67f6df9fb11d59ea2ddd5c0647987a7b98de7a9e5e00b4a2a3be93"
+    },
+    {
+      "path": "scripts/opening-price.mjs",
+      "sha256": "6e720dfb1bdac2c9f1528ee0e55c41db00cfe9b5210072710f97098d01fe57aa"
+    },
+    {
+      "path": "scripts/deployment-plan.mjs",
+      "sha256": "30f531c6d45c65e8fea0272b07991fb6212ed0806ae20f601d464ccd88e62105"
+    },
+    {
+      "path": "scripts/contract-manifest.mjs",
+      "sha256": "f6d57315b45bea4463f0895f07c40cf93d70a8d07714a4d397d96e75adab4fb7"
+    },
+    {
+      "path": "scripts/verify-release.mjs",
+      "sha256": "2246f0a72ca089df5d059200a7c76157496d5297f147cf7b12ce779b4788ecba"
+    },
+    {
+      "path": "scripts/prepare-recovery.mjs",
+      "sha256": "fcff8ea28c2e047eb2651b803070a24588903d10d056b3a3493d4779c8036b7d"
+    },
+    {
+      "path": "artifacts/contract-manifest.json",
+      "sha256": "f1ef7daa29879f6294109309cc4e504b2a7f056d5069f6b44afea1bf694e6387"
+    },
+    {
+      "path": "artifacts/compiler-input.json",
+      "sha256": "6db9c1c324effd29be8e593722c5b632cb769975375d6288275deb7efb150341"
+    },
+    {
+      "path": "artifacts/bytecode-sizes.json",
+      "sha256": "677c8f1e1bce9482c0d7b4c7b3b8b4dad94c5d391416c6fc583cc3201ac1bf6a"
+    },
+    {
+      "path": "artifacts/release-verification.json",
+      "sha256": "28111b4d7cfafc1ea90bdbba749edeec3796ad872b6c0f54178d430cbc0a7a2e"
+    },
+    {
+      "path": "artifacts/local-deployment-rehearsal.json",
+      "sha256": "a7d97ff9e4b145edfafb9e3b052357ec81a298fa403f62c714ea90f263d5de3a"
+    },
+    {
+      "path": "artifacts/foundation-predeployment-check.md",
+      "sha256": "b16287e396371aeeccefc13364c55e9c1ae62eab9c95453f7cfe5d762926ae9f"
+    }
+  ]
+}

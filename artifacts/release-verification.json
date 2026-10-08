@@ -1,0 +1,8 @@
+{
+  "status": "verified",
+  "contracts": 10,
+  "compiler": "0.8.26+commit.8a97fa7a.Emscripten.clang",
+  "compilerInputSha256": "6db9c1c324effd29be8e593722c5b632cb769975375d6288275deb7efb150341",
+  "sourceAndDependencyHashesMatch": true,
+  "standaloneCompilerInputReproducesBytecode": true
+}
