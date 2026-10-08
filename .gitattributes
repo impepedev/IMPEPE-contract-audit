@@ -1,0 +1,2 @@
+# Preserve the frozen compiler input and source bytes exactly for hash verification
+* -text
