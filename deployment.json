@@ -18,5 +18,7 @@
   "targetOpeningFdvImd": "1000",
   "tickSpacing": 60,
   "auditApproved": true,
-  "legalReviewApproved": false
+  "legalReviewApproved": false,
+  "legalReviewWaived": true,
+  "legalReviewWaiverBasis": "Project owner explicitly instructed to skip legal review on 2026-10-08"
 }

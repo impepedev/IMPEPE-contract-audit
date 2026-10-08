@@ -167,7 +167,7 @@
     },
     {
       "path": "deployment.json",
-      "sha256": "b7e6d7649baf038323f219a2301b262c965761031593bf17292d550ec52e426e"
+      "sha256": "538e2c8146c79e6081ba51992df128fbdf67c781bc1dd65af94044197f792eeb"
     },
     {
       "path": "README.md",
@@ -179,7 +179,7 @@
     },
     {
       "path": "CONTRACT_FINALIZATION.md",
-      "sha256": "df99edc2aed14cdf2342647b8af4910e4e92c46b550084d42c24bc0657124f4e"
+      "sha256": "99fdf52e80aad849dc87fdf73866fe7942229061838d8305678f4b42550472d2"
     },
     {
       "path": "EMERGENCY_MIGRATION.md",
@@ -191,11 +191,11 @@
     },
     {
       "path": "LAUNCH_READINESS.md",
-      "sha256": "6f7e4187b8765fa9275e865f6ad65dc9f898c2633b578cacbc02b5115461221f"
+      "sha256": "1d6d374ee4042f73d03804ddeb32c68f3b8269f50f56eb4342b4ee5f54f683e4"
     },
     {
       "path": "AUDIT_REMEDIATION.md",
-      "sha256": "53b158b2dc1c317c416ad586bb37b8e5e8bb86c12dc6917da5d3e63004d9a621"
+      "sha256": "ba3d927216d5f105461766a4d55422376ac28e241cecb62495796de8882d4625"
     },
     {
       "path": "BACKEND_RUNBOOK.md",
@@ -211,7 +211,7 @@
     },
     {
       "path": "scripts/deployment-plan.mjs",
-      "sha256": "8592b897a7d422b86a76694f3639178f9c01d21aca5334907549bef750640071"
+      "sha256": "23f708de9d20afdd0672c7d71583fc58098f24ca9ea1583d652d6dcfcf16d822"
     },
     {
       "path": "scripts/contract-manifest.mjs",
@@ -231,7 +231,7 @@
     },
     {
       "path": "scripts/prepare-foundation.mjs",
-      "sha256": "37c49655e4b88a973b0358b938fde7a29d01e3c4223ec63e992218b1b4c0bb0b"
+      "sha256": "3d759a1c62602e446b728b8b7cdc0c6de03fe81ea1f61ca8e74dc40a9fc2d32e"
     },
     {
       "path": "scripts/prepare-recovery.mjs",

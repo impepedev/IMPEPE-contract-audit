@@ -1,5 +1,7 @@
 # IMPEPE audit remediation and owner acceptance
 
+Subsequent owner decision, 8 October 2026: legal review is explicitly waived as a deployment gate. Configuration keeps `legalReviewApproved: false` and separately records `legalReviewWaived: true`; this is not a legal approval
+
 Original IMD audit: [08bcbaac-7072-4084-a22f-9d810be7b388](https://explorer.imd.fun/jobs/08bcbaac-7072-4084-a22f-9d810be7b388), completed 8 October 2026 against commit `cafc305e764f0300c8ddf9d70feea2113a58b913`
 
 The project owner explicitly instructed: “ok fix it and mark it as audit approved, we don't need another audit”. The owner separately chose a minimum balance of 10,000 IMPEPE for holder selection. Release v1.2 records audit approval on that basis after local remediation tests. IMD has not reviewed or approved the revised source. No second audit is requested, paid for or implied. Legal review remains a separate, incomplete deployment input

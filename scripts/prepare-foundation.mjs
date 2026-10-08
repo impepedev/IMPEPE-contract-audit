@@ -28,7 +28,7 @@ for (const [name, args] of definitions) {
 const plan = {
   status: 'unsigned_preparation_only', observedAtUtc: observation.observedAtUtc,
   deployer: admin, walletBalanceEth: formatEther(BigInt(result(3))), predicted, transactions,
-  launchGates: { auditApproved: config.auditApproved, legalReviewApproved: config.legalReviewApproved },
+  launchGates: { auditApproved: config.auditApproved, legalReviewApproved: config.legalReviewApproved, legalReviewWaived: config.legalReviewWaived === true },
   constraints: [
     'Refresh pending nonce and rebuild immediately before signing',
     'No unrelated wallet transactions between vault and token deployments',

@@ -1,6 +1,6 @@
 # IMPEPE launch readiness
 
-Status: v1.2 audit remediation locally verified and accepted by the project owner without a second audit; external deployment inputs and specialist legal review remain outstanding
+Status: v1.2 audit remediation locally verified and accepted by the project owner without a second audit; legal review waived as a deployment gate by the owner on 8 October 2026; external deployment inputs remain outstanding
 
 ## Completed preparation
 
@@ -16,7 +16,7 @@ Contracts, compiler artifacts/ABIs, fee and reward integration, checkpoint ranki
 - Test the real IMD quote/payment/artifact flow using a bounded approved budget
 - Test the canonical quote/router/frontend swap path end to end
 - Run realistic holder-count/gas benchmarks and finalize frame/trait progression bounds
-- Verify deployed contract source and complete specialist legal/regulatory/IP review. The project owner accepts the existing IMD audit plus locally verified remediation, without a second audit
+- Verify deployed contract source. The owner accepts the existing IMD audit plus locally verified remediation without a second audit and explicitly waives the legal-review deployment gate. No legal review has been completed
 - Confirm deployment nonces and the complete unsigned plan before the established wallet signs
 
 No contract was deployed, no liquidity was added and no real IMD job or payment was submitted during this preparation.
