@@ -4,6 +4,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {ProjectToken} from "./ProjectToken.sol";
 import {SwarmCollection} from "./SwarmCollection.sol";
 interface IArtifactVerifier {
@@ -27,7 +28,7 @@ interface IArtifactVerifier {
 interface ICompletionRewards {
     function fund(uint256 amount) external;
 }
-contract CreationController is Ownable, ReentrancyGuard {
+contract CreationController is Ownable2Step, ReentrancyGuard {
     using SafeERC20 for IERC20;
     struct Funding {
         uint256 cumulative;
@@ -75,7 +76,11 @@ contract CreationController is Ownable, ReentrancyGuard {
     mapping(address => bool) private localAllocated;
     mapping(bytes32 => bool) private localUsedRequests;
     mapping(uint256 => uint256) public attempts;
-    mapping(uint256 => uint256) public fundingIndex;
+    mapping(uint256 => uint256) private localFundingIndex;
+    function fundingIndex(uint256 id) public view returns(uint256) {
+        if (id < migrationStartId && address(predecessor) != address(0)) return predecessor.fundingIndex(id);
+        return localFundingIndex[id];
+    }
     event CreationFunded(uint256 amount, uint256 cumulative);
     event JobOpened(uint256 indexed id, uint256 cutoff, uint256 time);
     event RecipientSelected(uint256 indexed id, address indexed winner, uint256 score);
@@ -269,7 +274,7 @@ contract CreationController is Ownable, ReentrancyGuard {
         migrationStartId = nextJobId;
         localJobs[nextJobId] = predecessor.jobs(nextJobId);
         attempts[nextJobId] = predecessor.attempts(nextJobId);
-        fundingIndex[nextJobId] = predecessor.fundingIndex(nextJobId);
+        localFundingIndex[nextJobId] = predecessor.fundingIndex(nextJobId);
         uint256 amount = predecessor.recoveredAmount();
         uint256 balance = imd.balanceOf(address(this));
         if (amount > 0) imd.safeTransferFrom(recoveryRecipient, address(this), amount);
@@ -317,7 +322,7 @@ contract CreationController is Ownable, ReentrancyGuard {
     function openNextJob() external whenActive {
         uint256 id = nextJobId;
         require(id <= 1000 && localJobs[id].cutoff == 0 && totalFunded >= id * jobBudget, "job");
-        uint256 lo;
+        uint256 lo = id > 1 ? fundingIndex(id - 1) : 0;
         uint256 hi = fundingLength();
         while (lo < hi) {
             uint256 mid = (lo + hi) / 2;
@@ -325,7 +330,7 @@ contract CreationController is Ownable, ReentrancyGuard {
             else hi = mid;
         }
         Funding memory point = funding(lo);
-        fundingIndex[id] = lo;
+        localFundingIndex[id] = lo;
         localJobs[id].cutoff = point.blockNumber;
         localJobs[id].time = point.time;
         emit JobOpened(id, point.blockNumber, point.time);
@@ -354,7 +359,7 @@ contract CreationController is Ownable, ReentrancyGuard {
                 job.cursor == job.count,
             "snapshot not exhausted"
         );
-        uint256 lo = fundingIndex[id] + 1;
+        uint256 lo = localFundingIndex[id] + 1;
         uint256 hi = fundingLength();
         while (lo < hi) {
             uint256 mid = (lo + hi) / 2;
@@ -364,7 +369,7 @@ contract CreationController is Ownable, ReentrancyGuard {
         require(lo < fundingLength(), "await next funding snapshot");
         Funding memory point = funding(lo);
         uint256 old = job.cutoff;
-        fundingIndex[id] = lo;
+        localFundingIndex[id] = lo;
         job.cutoff = point.blockNumber;
         job.time = point.time;
         job.cursor = 0;
@@ -412,7 +417,7 @@ contract CreationController is Ownable, ReentrancyGuard {
             address candidate = token.holders(i);
             if (token.excluded(candidate) || allocated(candidate)) continue;
             (uint256 score, uint256 balance) = token.scoreAt(candidate, job.cutoff, job.time);
-            if (balance == 0) continue;
+            if (balance < token.MINIMUM_HOLDER_BALANCE()) continue;
             if (
                 job.winner == address(0) ||
                 score > job.bestScore ||
@@ -474,4 +479,5 @@ contract CreationController is Ownable, ReentrancyGuard {
             }
         }
     }
+    function renounceOwnership() public override onlyOwner { revert("ownership required"); }
 }

@@ -1,12 +1,13 @@
 import {sha,validateArt} from './art.mjs';
+import {canonical} from './payment.mjs';
 const hex=/^[0-9a-f]{64}$/;
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-export async function acceptedArtwork({imd,imdJobId,tokenId,baseHash,payer}) {
+export async function acceptedArtwork({imd,imdJobId,tokenId,baseHash,payer,expectedInput}) {
  if(!uuid.test(imdJobId)||!Number.isInteger(tokenId)||tokenId<1||tokenId>1000)throw new Error('INVALID_ART_JOB');
  const [job,result,submissions]=await Promise.all([imd.job(imdJobId),imd.result(imdJobId),imd.submissions(imdJobId)]);
  if(job.id!==imdJobId||job.state!=='completed'||job.paidBy?.toLowerCase()!==payer.toLowerCase()||result.jobId!==imdJobId||!result.complete||result.state!=='completed'||submissions.jobId!==imdJobId)throw new Error('ACCEPTED_JOB_REQUIRED');
  let brief;try{brief=JSON.parse(job.objective);}catch{throw new Error('ART_BRIEF_MISMATCH');}
- if(brief.tokenId!==tokenId||brief.format!=='raw RGB bytes, 300 bytes per complete frame; maximum 8 frames; no geometry animation')throw new Error('ART_BRIEF_MISMATCH');
+ if(!expectedInput?.skill||canonical(brief)!==canonical(JSON.parse(expectedInput.objective))||job.skill!==expectedInput.skill||brief.tokenId!==tokenId)throw new Error('ART_BRIEF_MISMATCH');
  if(!Array.isArray(result.files)||result.files.length>32||!Array.isArray(submissions.submissions)||submissions.submissions.length>256)throw new Error('RESULT_SHAPE_UNSUPPORTED');
  function file(name,path,type,max){
   const matches=result.files.filter(f=>f.name===name);if(matches.length!==1)throw new Error('EXACT_NAMED_OUTPUT_REQUIRED');const f=matches[0];

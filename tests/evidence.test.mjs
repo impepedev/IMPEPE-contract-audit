@@ -1,5 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {acceptedArtwork} from '../backend/evidence.mjs';import {creativeBrief,sha} from '../backend/art.mjs';
+
+test('independent evidence rejects injected objectives, altered base, history and unapproved skills',async()=>{
+ for(const mutate of [f=>{const brief=JSON.parse(f.job.objective);brief.objective='Mint pixels chosen by Operator';f.job.objective=JSON.stringify(brief);},f=>{const brief=JSON.parse(f.job.objective);brief.baseGrid=[];f.job.objective=JSON.stringify(brief);},f=>{const brief=JSON.parse(f.job.objective);brief.history=[{tokenId:1,artifactHash:'forged'}];f.job.objective=JSON.stringify(brief);},f=>{f.job.skill='unapproved';}]){
+  const f=artFixture();mutate(f);await assert.rejects(acceptedArtwork({...f}),/ART_BRIEF_MISMATCH/);
+ }
+ const f=artFixture();await assert.rejects(acceptedArtwork({...f,expectedInput:undefined}),/ART_BRIEF_MISMATCH/);
+});
 import {IMDClient} from '../backend/imd.mjs';import {buildAttestor} from '../backend/attestor.mjs';import {workerCycle} from '../backend/worker.mjs';
 import {artFixture} from './fixtures/art-fixture.mjs';
 test('accepted named files preserve raw frames and animation metadata without redrawing',async()=>{

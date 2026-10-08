@@ -2,7 +2,9 @@
 pragma solidity 0.8.26;
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-contract ProjectToken is ERC20, Ownable {
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+interface IAllocationVault { function token() external view returns(address); }
+contract ProjectToken is ERC20, Ownable2Step {
     struct Checkpoint {
         uint64 blockNumber;
         uint64 time;
@@ -17,9 +19,10 @@ contract ProjectToken is ERC20, Ownable {
     bool public eligibilitySealed;
     uint256 public immutable scoringStartBlock;
     event EligibilitySealed();
+    uint256 public constant MINIMUM_HOLDER_BALANCE = 10_000 ether;
     uint256 public constant FIXED_SUPPLY = 1_000_000_000 ether;
     constructor(address admin, address publicAllocation) ERC20("IMPEPE", "IMPEPE") Ownable(admin) {
-        require(publicAllocation != address(0) && publicAllocation != admin, "configuration");
+        require(publicAllocation != admin && publicAllocation.code.length > 0 && IAllocationVault(publicAllocation).token() == address(this), "allocation vault");
         scoringStartBlock = block.number;
         _mint(admin, 20_000_000 ether);
         _mint(publicAllocation, 980_000_000 ether);
@@ -66,7 +69,7 @@ contract ProjectToken is ERC20, Ownable {
     }
     function _checkpoint(address account) private {
         if (account == address(0)) return;
-        if (!known[account] && balanceOf(account) > 0) {
+        if (!known[account] && balanceOf(account) >= MINIMUM_HOLDER_BALANCE) {
             known[account] = true;
             registeredAt[account] = block.number;
             holders.push(account);
@@ -92,4 +95,5 @@ contract ProjectToken is ERC20, Ownable {
         _checkpoint(from);
         if (to != from) _checkpoint(to);
     }
+    function renounceOwnership() public override onlyOwner { revert("ownership required"); }
 }

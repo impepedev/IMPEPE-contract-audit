@@ -1,5 +1,7 @@
 # IMPEPE IMD audit scope
 
+Historical request for the original audit of commit `cafc305e764f0300c8ddf9d70feea2113a58b913`, now completed. The following scope preserves that audit's original assumptions. Current v1.2 rules, local remediation evidence and owner acceptance are documented in `AUDIT_REMEDIATION.md` and `artifacts/audit-approval.json`. No new audit is requested by this repository update
+
 Audit this exact repository commit without changing code or deploying contracts. Review the complete system, not isolated contracts. Use the compiler-input and contract manifest to identify the reviewed artifacts. Report the commit, source hashes, compiler version, assumptions, testing performed and any review limitations.
 
 ## Contracts in scope

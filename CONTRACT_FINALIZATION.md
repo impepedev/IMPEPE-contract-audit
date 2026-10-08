@@ -1,8 +1,8 @@
-# IMPEPE contract v1.1 source freeze
+# IMPEPE contract v1.2 source freeze
 
-Date: 2026-10-07
+Date: 2026-10-08
 
-Status: approved project policies implemented; source frozen for independent review and deployment preparation
+Status: IMD audit findings remediated and locally tested; project-owner audit approval without a second audit. See AUDIT_REMEDIATION.md and artifacts/audit-approval.json for scope and accepted design risks
 
 ## Fixed economics and roles
 
@@ -29,7 +29,7 @@ SVGRenderer is embedded in the collection, not another deployment. Existing IMD,
 
 ## Holder selection and empty snapshots
 
-Scoring starts at the first token mint and accumulates token-seconds. A positive cutoff balance is required, equal scores favor the lower numeric address, and each wallet receives at most one original allocation. Secondary transfers are unrestricted. Exclusions are sealed before pool seeding.
+Scoring starts at the first token mint and accumulates token-seconds. At least 10,000 IMPEPE at the cutoff is required, equal scores favor the lower numeric address, and each wallet receives at most one original allocation. Registry admission starts at the same minimum; earlier scores are preserved. Secondary transfers are unrestricted. Exclusions are sealed before pool seeding
 
 The earliest cumulative creation-funding checkpoint covering the sequential job budget determines its snapshot. Current deployment budget: 0.5 IMD. Contract settlement: 128 blocks plus signed finality; backend: Ethereum finalized RPC state. Leaderboard display refreshes every 100 indexed blocks.
 
@@ -59,7 +59,7 @@ The 4% eligible trading fee is 3% creation plus 1% protocol. Successful #1000 co
 
 Included: Solidity source, pinned dependencies, ABI/bytecode artifacts, full standard compiler input, source/ABI/bytecode hashes, gas measurements, backend/schema, tests and unsigned deployment tooling. Local tests exercise actual Uniswap v4 PoolManager and canonical V4Quoter, both currency orientations, permanent liquidity lock, historical ranking, recovery, delivery, empty snapshots and the permanent #1000 transition. The transition test seeds #999 state, not 1,000 generated/minted works. Device evidence tests use local keys, not a real paid IMD receipt.
 
-No live deployment, swap or paid IMD job was submitted. Mainnet still requires attestor address/custody/evidence operations, production RPC/database, a fresh deployer nonce, real bounded IMD integration and recovery checks, realistic holder/gas benchmarks, Sepolia rehearsal, source verification, independent security audit and specialist legal/regulatory/IP review. Deployment tooling remains gated on missing inputs and review flags. Immutable Operator/attestor key loss or an unavailable refund can halt creation. This source freeze is not an independent audit or mainnet safety certification.
+The original IMD audit is complete. The project owner approves v1.2 remediation after local regression testing and declines a second audit. No mainnet contract was deployed during remediation. Attestor address/custody/evidence operations, a fresh deployer nonce, real bounded artwork integration and specialist legal/regulatory/IP review remain separate deployment inputs. Immutable Operator/attestor key loss or an unavailable refund can halt creation. Owner acceptance is not a new independent audit or a mainnet safety certification
 
 ## Approved emergency creation migration
 

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import {network} from 'hardhat';import {BrowserProvider,ContractFactory,AbiCoder,parseEther,sha256,keccak256,toUtf8Bytes,getCreate2Address,zeroPadValue,toBeHex,MaxUint256,ZeroHash} from 'ethers';
+import {network} from 'hardhat';import {BrowserProvider,ContractFactory,AbiCoder,parseEther,sha256,keccak256,toUtf8Bytes,getCreate2Address,getCreateAddress,zeroPadValue,toBeHex,MaxUint256,ZeroHash} from 'ethers';
 import {compile} from '../scripts/compile.mjs';
 import {openingPrice} from '../scripts/opening-price.mjs';
 import {spawnSync} from 'node:child_process';import path from 'node:path';import {randomUUID} from 'node:crypto';
@@ -9,10 +9,44 @@ export const baseArt=Buffer.alloc(300);
 const rows=['..........','..........','..........','...GGGG...','...W.W....','...GGGG...','...RRRR...','..........','...GGGG...','...GGGG...'];
 const palette={'.':[0,0,0],G:[34,183,0],W:[255,255,255],R:[183,0,0]};rows.join('').split('').forEach((c,i)=>baseArt.set(palette[c],i*3));
 const gas={};
+test('renderer preserves every RGB value across eight distinct frames and word boundaries',async()=>{
+ const f=await fixture();try{
+  const renderer=await f.deploy('TestSVGRenderer'),bytes=Buffer.from(Array.from({length:2400},(_,i)=>(i*17+31)%256));
+  const svg=await renderer.render(bytes,2000),cells=[...svg.matchAll(/<rect x="(\d)" y="(\d)" width="1" height="1" fill="(#[0-9a-f]{6})"><animate attributeName="fill" values="([^"]+)"/g)];assert.equal(cells.length,100);
+  for(let cell=0;cell<100;cell++){assert.equal(Number(cells[cell][1]),cell%10);assert.equal(Number(cells[cell][2]),Math.floor(cell/10));const expected=Array.from({length:8},(_,frame)=>'#'+bytes.subarray(frame*300+cell*3,frame*300+cell*3+3).toString('hex'));assert.equal(cells[cell][3],expected[0]);assert.deepEqual(cells[cell][4].split(';'),expected);}
+ }finally{await f.connection.close();}
+});
+test('audit fixes reject dust registration and wrong vaults, preserve lifetime scores and require accepted ownership',async()=>{
+ const f=await fixture();try{
+  const target=await f.accounts[6].getAddress(),count=await f.token.holderCount();
+  await(await f.token.connect(f.publicWallet).transfer(target,1n)).wait();assert.equal(await f.token.holderCount(),count);
+  await f.rpc.request({method:'evm_increaseTime',params:[100]});await f.rpc.request({method:'evm_mine',params:[]});
+  await(await f.token.connect(f.publicWallet).transfer(target,parseEther('10000')-1n)).wait();assert.equal(await f.token.holderCount(),count+1n);
+  const block=await f.provider.getBlock('latest');assert.ok((await f.token.scoreAt(target,block.number,block.timestamp)).score>=100n);
+  await assert.rejects(f.deploy('ProjectToken',[await f.admin.getAddress(),target]));
+  for(const contract of [f.token,f.controller,f.router,f.nft])await assert.rejects(contract.renounceOwnership());
+  await(await f.controller.transferOwnership(target)).wait();assert.equal(await f.controller.owner(),await f.admin.getAddress());await assert.rejects(f.controller.connect(f.bob).acceptOwnership());await(await f.controller.connect(f.accounts[6]).acceptOwnership()).wait();assert.equal(await f.controller.owner(),target);
+  const wrong=await f.deploy('TestFeeSource',[target]);const router=await f.deploy('FeeRouter',[await f.admin.getAddress(),f.imd.target,f.controller.target,f.rewards.target,await f.admin.getAddress()]);await assert.rejects(router.configureHook(wrong.target));
+ }finally{await f.connection.close();}
+});
+
+test('external Uniswap protocol fees preserve buy and sell liveness in both currency orders',async()=>{
+ for(const reverse of [false,true]){const f=await fixture({v4:true,reverse});try{
+  await assert.rejects(f.vault.configure({...f.key,hooks:f.source.target},0));
+  await(await f.vault.configure(f.key,0)).wait();await(await f.vault.configure(f.key,60)).wait();await seedPool(f);
+  await(await f.manager.setProtocolFeeController(await f.admin.getAddress())).wait();await(await f.manager.setProtocolFee(f.key,1000|(1000<<12))).wait();
+  const buying=f.key.currency0.toLowerCase()===f.imd.target.toLowerCase(),deadline=(await f.provider.getBlock('latest')).timestamp+1000,before=await f.token.balanceOf(await f.publicWallet.getAddress());
+  const quoter=await f.deploy('V4Quoter',[f.manager.target]);
+  const buy=await quoter.quoteExactInputSingle.staticCall({poolKey:f.key,zeroForOne:buying,exactAmount:parseEther('100'),hookData:'0x'});
+  await(await f.trade.connect(f.publicWallet).swapExactInput(f.key,buying,parseEther('100'),buy.amountOut,deadline)).wait();assert.equal(await f.token.balanceOf(await f.publicWallet.getAddress())-before,buy.amountOut);assert.equal(await f.imd.balanceOf(f.controller.target),parseEther('3'));
+  const sell=await quoter.quoteExactInputSingle.staticCall({poolKey:f.key,zeroForOne:!buying,exactAmount:buy.amountOut/2n,hookData:'0x'}),moneyBefore=await f.imd.balanceOf(await f.publicWallet.getAddress());
+  await(await f.trade.connect(f.publicWallet).swapExactInput(f.key,!buying,buy.amountOut/2n,sell.amountOut,deadline)).wait();assert.equal(await f.imd.balanceOf(await f.publicWallet.getAddress())-moneyBefore,sell.amountOut);assert.equal(await f.hook.pendingCreation(),0n);
+ }finally{await f.connection.close();}}
+});
 test('accepted swarm output is independently signed, durably submitted and minted automatically on a local chain',async()=>{
  const {PGlite}=await import('@electric-sql/pglite'),{buildAttestor}=await import('../backend/attestor.mjs'),{completeArtwork,reconcileMints}=await import('../backend/submit-art.mjs'),{reserveJob,recordAdmission}=await import('../backend/jobs.mjs'),{artFixture}=await import('./fixtures/art-fixture.mjs'),{HDNodeWallet}=await import('ethers');
  const f=await fixture({realVerifier:true}),db=new PGlite();let app;try{
-  await db.exec(fs.readFileSync('backend/schema.sql','utf8'));const config={liveTransactions:true,chainId:31337,controllerAddress:f.controller.target,collectionAddress:f.nft.target,tokenAddress:f.token.target,signingEnabled:true};const serviceToken='test-service-token-'.repeat(3),data=artFixture({tokenId:1,bytes:baseArt,payer:await f.operator.getAddress()});
+  await db.exec(fs.readFileSync('backend/schema.sql','utf8'));const config={artSkill:'impepe-art',liveTransactions:true,chainId:31337,controllerAddress:f.controller.target,collectionAddress:f.nft.target,tokenAddress:f.token.target,signingEnabled:true};const serviceToken='test-service-token-'.repeat(3),data=artFixture({tokenId:1,bytes:baseArt,payer:await f.operator.getAddress()});
   app=buildAttestor({provider:f.provider,signer:f.accounts[5],config,imd:data.imd,serviceToken});const origin=await app.listen({host:'127.0.0.1',port:0});assert.equal((await app.inject({method:'POST',url:'/artifact',payload:{tokenId:1,attempt:0,imdJobId:data.imdJobId}})).statusCode,401);
   await(await f.source.route(f.router.target,parseEther('20'))).wait();await(await f.controller.openNextJob()).wait();for(let i=0;i<4;i++)await f.rpc.request({method:'evm_mine',params:[]});const opened=await f.controller.jobs(1);
   const finality=(await app.inject({url:`/finality?cutoff=${opened.cutoff}`,headers:{authorization:`Bearer ${serviceToken}`}})).json();assert.ok(finality.signature);await(await f.controller.confirmFinality(AbiCoder.defaultAbiCoder().encode(['bytes32','uint256','bytes'],[finality.blockHash,finality.expiresAt,finality.signature]))).wait();await(await f.controller.scan(250)).wait();await(await f.controller.connect(f.operator).payJob()).wait();await(await f.controller.connect(f.operator).bindRequest(keccak256(toUtf8Bytes(data.imdJobId)))).wait();const selected=await f.controller.jobs(1);
@@ -25,15 +59,18 @@ test('accepted swarm output is independently signed, durably submitted and minte
  }finally{await app?.close();await db.close();await f.connection.close();}
 });
 async function fixture({seeded=false,v4=false,reverse=false,realVerifier=false}={}) {
- const connection=await network.connect('default');const rpc=connection.provider;const provider=new BrowserProvider(rpc,undefined,realVerifier?{cacheTimeout:-1}:{});provider.pollingInterval=10;
+ const connection=await network.connect('default');const rpc=connection.provider;const provider=new BrowserProvider(rpc,undefined,{cacheTimeout:-1});provider.pollingInterval=10;
  const accounts=await Promise.all(Array.from({length:8},(_,i)=>provider.getSigner(i)));const [admin,publicWallet,alice,bob,operator]=accounts;
  const addr=async x=>x.getAddress();
  async function deploy(name,args=[]){const a=artifact(name);const contract=await new ContractFactory(a.abi,a.evm.bytecode.object,admin).deploy(...args);await contract.waitForDeployment();return contract;}
- let token,imd;if(reverse){imd=await deploy('TestIMD');token=await deploy('ProjectToken',[await addr(admin),await addr(publicWallet)]);}else{token=await deploy('ProjectToken',[await addr(admin),await addr(publicWallet)]);imd=await deploy('TestIMD');}const verifier=realVerifier?await deploy('ReceiptVerifier',[await accounts[5].getAddress()]):await deploy('TestVerifier');
+ let token,imd;if(reverse)imd=await deploy('TestIMD');const allocation=await deploy('TestAllocationVault',[getCreateAddress({from:await addr(admin),nonce:await provider.getTransactionCount(await addr(admin))+1})]);token=await deploy('ProjectToken',[await addr(admin),allocation.target]);await(await allocation.release(await addr(publicWallet),parseEther('980000000'))).wait();if(!reverse)imd=await deploy('TestIMD');const verifier=realVerifier?await deploy('ReceiptVerifier',[await accounts[5].getAddress()]):await deploy('TestVerifier');
+ // Token constructor guard adds an allocation-vault deployment; choose test money addresses
+ // explicitly so the two fixture variants continue exercising opposite currency orders
+ if(v4){for(let tries=0;(BigInt(imd.target)<BigInt(token.target))!==reverse;tries++){if(tries>=512)throw new Error('Fixture currency order');imd=await deploy('TestIMD');}}
  const nft=await deploy(seeded?'SeededCollection':'SwarmCollection',[await addr(admin)]);const rewards=await deploy('RewardsDistributor',[imd.target,nft.target]);
  const controller=await deploy('CreationController',[await addr(admin),imd.target,token.target,nft.target,verifier.target,await addr(operator),await addr(operator),parseEther('0.5'),2,sha256(baseArt)]);
  const router=await deploy('FeeRouter',[await addr(admin),imd.target,controller.target,rewards.target,await addr(admin)]);
- const source=await deploy('TestFeeSource');await(await controller.configureRouter(router.target)).wait();await(await nft.configure(controller.target,rewards.target)).wait();
+ const source=await deploy('TestFeeSource',[router.target]);await(await controller.configureRouter(router.target)).wait();await(await nft.configure(controller.target,rewards.target)).wait();
  let manager,swap,liquidity,hook,key,vault,trade;
  if(v4){
   manager=await deploy('PoolManager',[await addr(admin)]);swap=await deploy('PoolSwapTest',[manager.target]);liquidity=await deploy('PoolModifyLiquidityTest',[manager.target]);const factory=await deploy('TestCreate2');
@@ -47,8 +84,8 @@ async function fixture({seeded=false,v4=false,reverse=false,realVerifier=false}=
  }else{await(await router.configureHook(source.target)).wait();await(await source.approve(imd.target,router.target)).wait();await(await imd.transfer(source.target,parseEther('100000'))).wait();}
  for(const value of [await addr(admin),await addr(publicWallet),await addr(operator),router.target,controller.target,rewards.target,source.target,...(v4?[manager.target,swap.target,liquidity.target,hook.target]:[])])await(await token.setExcluded(value,true)).wait();
  await(await token.sealEligibility()).wait();
- await(await token.connect(publicWallet).transfer(await addr(alice),parseEther('100'))).wait();await rpc.request({method:'evm_increaseTime',params:[100]});await rpc.request({method:'evm_mine',params:[]});
- await(await token.connect(publicWallet).transfer(await addr(bob),parseEther('100'))).wait();await rpc.request({method:'evm_increaseTime',params:[20]});await rpc.request({method:'evm_mine',params:[]});
+ await(await token.connect(publicWallet).transfer(await addr(alice),parseEther('10000'))).wait();await rpc.request({method:'evm_increaseTime',params:[100]});await rpc.request({method:'evm_mine',params:[]});
+ await(await token.connect(publicWallet).transfer(await addr(bob),parseEther('10000'))).wait();await rpc.request({method:'evm_increaseTime',params:[20]});await rpc.request({method:'evm_mine',params:[]});
  return {connection,rpc,provider,accounts,admin,publicWallet,alice,bob,operator,token,imd,verifier,nft,rewards,controller,router,source,manager,swap,liquidity,hook,key,vault,trade,deploy};
 }
 async function seedPool(f,{donation=0n,openingTick=0}={}){
@@ -75,7 +112,7 @@ test('emergency recovery is admin-only, delayed, cancellable and permanently ret
   await(await f.controller.scheduleWithdrawal(reason,{gasLimit:1000000})).wait();await assert.rejects(f.controller.resumeCreation());await assert.rejects(f.controller.withdrawCreationFunds());await assert.rejects(f.controller.connect(f.bob).cancelWithdrawal());
   await(await f.controller.cancelWithdrawal()).wait();await(await f.controller.resumeCreation({gasLimit:1000000})).wait();await(await f.controller.emergencyPause({gasLimit:1000000})).wait();await(await f.controller.scheduleWithdrawal(reason,{gasLimit:1000000})).wait();
   await(await f.source.route(f.router.target,parseEther('10'))).wait();await f.rpc.request({method:'evm_increaseTime',params:[172800]});await f.rpc.request({method:'evm_mine',params:[]});const balance=await f.imd.balanceOf(await f.admin.getAddress());
-  await(await f.controller.transferOwnership(await f.bob.getAddress())).wait();await(await f.controller.connect(f.bob).withdrawCreationFunds({gasLimit:1000000})).wait();assert.equal((await f.imd.balanceOf(await f.admin.getAddress()))-balance,parseEther('0.9'));assert.equal(await f.controller.recoveryRecipient(),await f.admin.getAddress());assert.equal(await f.controller.retired(),true);assert.equal(await f.imd.balanceOf(f.controller.target),0n);await assert.rejects(f.controller.connect(f.bob).resumeCreation());await assert.rejects(f.controller.connect(f.bob).withdrawCreationFunds());
+  await(await f.controller.transferOwnership(await f.bob.getAddress())).wait();await(await f.controller.connect(f.bob).acceptOwnership()).wait();await(await f.controller.connect(f.bob).withdrawCreationFunds({gasLimit:1000000})).wait();assert.equal((await f.imd.balanceOf(await f.admin.getAddress()))-balance,parseEther('0.9'));assert.equal(await f.controller.recoveryRecipient(),await f.admin.getAddress());assert.equal(await f.controller.retired(),true);assert.equal(await f.imd.balanceOf(f.controller.target),0n);await assert.rejects(f.controller.connect(f.bob).resumeCreation());await assert.rejects(f.controller.connect(f.bob).withdrawCreationFunds());
  }finally{await f.connection.close();}
 });
 
@@ -128,10 +165,10 @@ test('refund-backed recovery preserves recipient and NFT number and rejects reus
 
 test('fully scanned empty snapshots advance only to the earliest later funding block',async()=>{
  const f=await fixture();try{
-  for(const holder of [f.alice,f.bob])await(await f.token.connect(holder).transfer(await f.publicWallet.getAddress(),parseEther('100'))).wait();
+  for(const holder of [f.alice,f.bob])await(await f.token.connect(holder).transfer(await f.publicWallet.getAddress(),parseEther('10000'))).wait();
   await(await f.source.route(f.router.target,parseEther('20'))).wait();await(await f.controller.openNextJob()).wait();for(let i=0;i<4;i++)await f.rpc.request({method:'evm_mine',params:[]});await(await f.controller.confirmFinality('0x')).wait();
   await assert.rejects(f.controller.advanceEmptySnapshot());await(await f.controller.scan(1)).wait();await assert.rejects(f.controller.advanceEmptySnapshot());await(await f.controller.scan(250,{gasLimit:3000000})).wait();await assert.rejects(f.controller.advanceEmptySnapshot());
-  await(await f.token.connect(f.publicWallet).transfer(await f.alice.getAddress(),parseEther('100'))).wait();const first=(await(await f.source.route(f.router.target,parseEther('1'))).wait()).blockNumber;await(await f.source.route(f.router.target,parseEther('1'))).wait();
+  await(await f.token.connect(f.publicWallet).transfer(await f.alice.getAddress(),parseEther('10000'))).wait();const first=(await(await f.source.route(f.router.target,parseEther('1'))).wait()).blockNumber;await(await f.source.route(f.router.target,parseEther('1'))).wait();
   await(await f.controller.advanceEmptySnapshot({gasLimit:1000000})).wait();const advanced=await f.controller.jobs(1);assert.equal(advanced.cutoff,BigInt(first));assert.equal(advanced.finalized,false);assert.equal(await f.controller.nextJobId(),1n);await assert.rejects(f.controller.scan(250));
   for(let i=0;i<4;i++)await f.rpc.request({method:'evm_mine',params:[]});await(await f.controller.confirmFinality('0x')).wait();await(await f.controller.scan(250,{gasLimit:3000000})).wait();assert.equal((await f.controller.jobs(1)).winner,await f.alice.getAddress());await assert.rejects(f.controller.advanceEmptySnapshot());
  }finally{await f.connection.close();}
@@ -139,8 +176,16 @@ test('fully scanned empty snapshots advance only to the earliest later funding b
 
 test('selected contract wallets receive their NFT even when receiver callbacks reject',async()=>{
  const f=await fixture();try{
-  for(const holder of [f.alice,f.bob])await(await f.token.connect(holder).transfer(await f.publicWallet.getAddress(),parseEther('100'))).wait();const rejecting=await f.deploy('RejectingNFTHolder');await(await f.token.connect(f.publicWallet).transfer(rejecting.target,parseEther('100'))).wait();
+  for(const holder of [f.alice,f.bob])await(await f.token.connect(holder).transfer(await f.publicWallet.getAddress(),parseEther('10000'))).wait();const rejecting=await f.deploy('RejectingNFTHolder');await(await f.token.connect(f.publicWallet).transfer(rejecting.target,parseEther('10000'))).wait();
   await(await f.source.route(f.router.target,parseEther('20'))).wait();await ready(f);assert.equal((await f.controller.jobs(1)).winner,rejecting.target);await mint(f);assert.equal(await f.nft.ownerOf(1),rejecting.target);assert.equal(await f.controller.nextJobId(),2n);
+ }finally{await f.connection.close();}
+});
+
+test('snapshot balance minimum rejects historical leaders below 10,000 and preserves later snapshot progress',async()=>{
+ const f=await fixture();try{
+  await(await f.token.connect(f.alice).transfer(await f.publicWallet.getAddress(),1n)).wait();await(await f.source.route(f.router.target,parseEther('40'))).wait();await ready(f);assert.equal((await f.controller.jobs(1)).winner,await f.bob.getAddress());await mint(f);
+  await ready(f);assert.equal((await f.controller.jobs(2)).selected,false);await(await f.token.connect(f.alice).transfer(await f.publicWallet.getAddress(),parseEther('9999'))).wait();await(await f.token.connect(f.publicWallet).transfer(await f.accounts[6].getAddress(),parseEther('10000'))).wait();await(await f.source.route(f.router.target,parseEther('1'))).wait();await(await f.controller.advanceEmptySnapshot()).wait();for(let i=0;i<4;i++)await f.rpc.request({method:'evm_mine',params:[]});await(await f.controller.confirmFinality('0x')).wait();await(await f.controller.scan(250)).wait();await mint(f,Buffer.alloc(300,42));const index=await f.controller.fundingIndex(2);assert.ok(index>0n);
+  await(await f.source.route(f.router.target,parseEther('40'))).wait();await(await f.controller.openNextJob()).wait();assert.ok(await f.controller.fundingIndex(3)>=index);
  }finally{await f.connection.close();}
 });
 test('fixed supply, cutoff scores, exclusions, operator restrictions and exact base NFT',async()=>{
@@ -149,7 +194,7 @@ test('fixed supply, cutoff scores, exclusions, operator restrictions and exact b
   await assert.rejects(f.token.setExcluded(await f.alice.getAddress(),true));
   const before=await f.imd.balanceOf(await f.admin.getAddress());await(await f.source.route(f.router.target,parseEther('20'))).wait();assert.equal((await f.imd.balanceOf(await f.admin.getAddress()))-before,parseEther('0.2'));
   assert.equal(await f.imd.balanceOf(f.controller.target),parseEther('0.6'));
-  await(await f.token.connect(f.alice).transfer(await f.bob.getAddress(),parseEther('100'))).wait();await ready(f);
+  await(await f.token.connect(f.alice).transfer(await f.bob.getAddress(),parseEther('10000'))).wait();await ready(f);
   const job=await f.controller.jobs(1);assert.equal(job.winner.toLowerCase(),(await f.alice.getAddress()).toLowerCase());
   await assert.rejects(f.controller.payJob());await assert.rejects(f.controller.connect(f.operator).submit(baseArt,0,0,'0x'));
   await(await f.verifier.setAccepted(false)).wait();await(await f.controller.connect(f.operator).payJob()).wait();await(await f.controller.connect(f.operator).bindRequest(ZeroHash.replace(/0$/,'1'))).wait();
@@ -166,6 +211,8 @@ test('seeded #999 state tests atomic #1000, permanent routing, proportional rewa
   const layout=artifact('CreationController').storageLayout.storage.find(row=>row.label==='nextJobId');await f.rpc.request({method:'hardhat_setStorageAt',params:[f.controller.target,toBeHex(BigInt(layout.slot)),zeroPadValue(toBeHex(1000),32)]});
   await(await f.source.route(f.router.target,parseEther('20000'))).wait();await ready(f);gas.finaleMint=String((await mint(f,Buffer.alloc(2400,70))).gasUsed);
   assert.equal(await f.nft.totalSupply(),1000n);assert.equal(await f.controller.nextJobId(),1001n);await assert.rejects(f.controller.openNextJob());
+  gas.finaleTokenURI=String(await f.nft.tokenURI.estimateGas(1000));assert.ok(BigInt(gas.finaleTokenURI)<8_000_000n,`maximum-frame tokenURI gas ${gas.finaleTokenURI}`);
+  const metadata=JSON.parse(Buffer.from((await f.nft.tokenURI(1000)).split(',')[1],'base64')),svg=Buffer.from(metadata.image.split(',')[1],'base64').toString();assert.equal((svg.match(/<rect /g)||[]).length,100);assert.equal((svg.match(/<animate /g)||[]).length,100);for(const values of svg.matchAll(/values="([^"]+)"/g))assert.equal(values[1].split(';').length,8);
   assert.equal(await f.imd.balanceOf(f.controller.target),0n);await(await f.rewards.connect(f.alice).claim([1,1000])).wait();await(await f.rewards.connect(f.bob).claim([2])).wait();
   const creationBalance=await f.imd.balanceOf(f.controller.target);await(await f.source.route(f.router.target,parseEther('1000'))).wait();assert.equal(await f.imd.balanceOf(f.controller.target),creationBalance);
   assert.equal(await f.rewards.claimable(await f.alice.getAddress(),[1,1000]),parseEther('0.06'));
@@ -266,7 +313,7 @@ test('holder snapshots preserve scores, require cutoff balances and break exact 
   await(await f.token.connect(f.alice).transfer(await f.publicWallet.getAddress(),await f.token.balanceOf(await f.alice.getAddress()))).wait();await(await f.token.connect(f.bob).transfer(await f.publicWallet.getAddress(),await f.token.balanceOf(await f.bob.getAddress()))).wait();
   await f.rpc.request({method:'evm_setAutomine',params:[false]});
   const nonce=await f.provider.getTransactionCount(await f.publicWallet.getAddress(),'pending');
-  const t1=await f.token.connect(f.publicWallet).transfer(larger,parseEther('100'),{nonce,gasLimit:500000});const t2=await f.token.connect(f.publicWallet).transfer(smaller,parseEther('100'),{nonce:nonce+1,gasLimit:500000});
+  const t1=await f.token.connect(f.publicWallet).transfer(larger,parseEther('10000'),{nonce,gasLimit:500000});const t2=await f.token.connect(f.publicWallet).transfer(smaller,parseEther('10000'),{nonce:nonce+1,gasLimit:500000});
   await f.rpc.request({method:'evm_mine',params:[]});await f.rpc.request({method:'evm_setAutomine',params:[true]});await t1.wait();await t2.wait();
   await f.rpc.request({method:'evm_increaseTime',params:[100]});await(await f.source.route(f.router.target,parseEther('20'))).wait();
   const cutoff=await f.provider.getBlock('latest');const smallScore=await f.token.scoreAt(smaller,cutoff.number,cutoff.timestamp);const largeScore=await f.token.scoreAt(larger,cutoff.number,cutoff.timestamp);assert.equal(smallScore.score,largeScore.score);

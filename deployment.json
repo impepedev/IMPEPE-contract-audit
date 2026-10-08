@@ -17,6 +17,6 @@
   "liquidityModel": "single_sided_permanent",
   "targetOpeningFdvImd": "1000",
   "tickSpacing": 60,
-  "auditApproved": false,
+  "auditApproved": true,
   "legalReviewApproved": false
 }

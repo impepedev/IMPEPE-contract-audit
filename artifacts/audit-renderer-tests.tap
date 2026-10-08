@@ -1,0 +1,16 @@
+TAP version 13
+# Subtest: renderer preserves every RGB value across eight distinct frames and word boundaries
+ok 1 - renderer preserves every RGB value across eight distinct frames and word boundaries
+  ---
+  duration_ms: 4100.2221
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 24900.8888

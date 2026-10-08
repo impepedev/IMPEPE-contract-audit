@@ -13,7 +13,6 @@ contract RewardsDistributor is ReentrancyGuard {
     IERC20 public immutable imd;
     IRewardCollection public immutable collection;
     uint256 public accRewardPerNFT;
-    uint256 public remainder;
     mapping(uint256 => uint256) public debt;
     mapping(address => uint256) public creditScaled;
     event RewardsFunded(uint256 amount);
@@ -28,9 +27,8 @@ contract RewardsDistributor is ReentrancyGuard {
         uint256 beforeBalance = imd.balanceOf(address(this));
         imd.safeTransferFrom(msg.sender, address(this), amount);
         require(imd.balanceOf(address(this)) - beforeBalance == amount, "received");
-        uint256 scaled = amount * SCALE + remainder;
+        uint256 scaled = amount * SCALE;
         accRewardPerNFT += scaled / 1000;
-        remainder = scaled % 1000;
         emit RewardsFunded(amount);
     }
     function onTransfer(address from, address, uint256 id) external {

@@ -1,12 +1,12 @@
 # IMPEPE contracts and backend
 
-Local launch preparation implementation. It is not audited, deployed or mainnet ready. Read LAUNCH_READINESS.md before generating transactions. The original DOCX and prior visual assets are preserved.
+Release v1.2 incorporates fixes from the completed IMD audit and is audit-approved under the project owner's acceptance of locally verified remediation without a second audit. See AUDIT_REMEDIATION.md and artifacts/audit-approval.json. No mainnet contracts have been deployed; deployment inputs are tracked in LAUNCH_READINESS.md. The original DOCX and prior visual assets are preserved
 
 ## Accepted parameters
 
 Ethereum; fixed 1 billion IMPEPE with 18 decimals; 980 million reserved for the official IMPEPE/IMD liquidity position, and 20 million minted to the established deployer. The 1% protocol fee goes to that deployer. The provided separate address is the Swarm Operator. Wallet assignments are recorded in deployment.json; no private keys are included.
 
-Holding-time scoring begins at the token's first mint. A wallet must have a positive balance at the funding-block cutoff. Ties go to the numerically lower address. Original allocation is limited to one per wallet; secondary ownership is unrestricted. Exclusions are set once and irreversibly sealed before fees fund artwork. Include the administrator, Operator, protocol recipient, PoolManager and every protocol contract. This implementation scans the actual holder registry in bounded batches; the Operator cannot submit a recipient.
+Holding-time scoring begins at the token's first mint. A wallet must hold at least 10,000 IMPEPE at the funding-block cutoff. Holder registration starts once the wallet reaches that minimum; scores retain all earlier balance-time history. Ties go to the numerically lower address. Original allocation is limited to one per wallet; secondary ownership is unrestricted. Exclusions are set once and irreversibly sealed before fees fund artwork. Include the administrator, Operator, protocol recipient, PoolManager and every protocol contract. This implementation scans the actual holder registry in bounded batches; the Operator cannot submit a recipient.
 
 ## Contracts
 

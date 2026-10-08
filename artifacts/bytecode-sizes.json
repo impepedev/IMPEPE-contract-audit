@@ -1,13 +1,13 @@
 {
-  "CreationController": 19987,
-  "FeeRouter": 5669,
+  "CreationController": 20573,
+  "FeeRouter": 5784,
   "HookFactory": 632,
-  "IMPEPEHook": 6146,
+  "IMPEPEHook": 5520,
   "IMPEPESwapRouter": 3601,
-  "LiquidityBootstrap": 6979,
-  "ProjectToken": 4272,
+  "LiquidityBootstrap": 8656,
+  "ProjectToken": 4596,
   "ReceiptVerifier": 3580,
-  "RewardsDistributor": 3509,
+  "RewardsDistributor": 3459,
   "SVGRenderer": 85,
-  "SwarmCollection": 10278
+  "SwarmCollection": 10545
 }

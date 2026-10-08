@@ -1,0 +1,262 @@
+TAP version 13
+# Subtest: Sequential tasks, signed cookies, persistence and duplicate constraints
+ok 1 - Sequential tasks, signed cookies, persistence and duplicate constraints
+  ---
+  duration_ms: 2867.7876
+  type: 'test'
+  ...
+# Subtest: Supabase minimal response and duplicate translation
+ok 2 - Supabase minimal response and duplicate translation
+  ---
+  duration_ms: 24.7715
+  type: 'test'
+  ...
+# Subtest: Disabled configuration and input validation
+ok 3 - Disabled configuration and input validation
+  ---
+  duration_ms: 6.404
+  type: 'test'
+  ...
+# Subtest: Modern Supabase secret keys use the API key header without pretending to be JWTs
+ok 4 - Modern Supabase secret keys use the API key header without pretending to be JWTs
+  ---
+  duration_ms: 0.9715
+  type: 'test'
+  ...
+# Subtest: public leaderboard requires the same 10,000 token minimum as contract selection
+ok 5 - public leaderboard requires the same 10,000 token minimum as contract selection
+  ---
+  duration_ms: 2.4412
+  type: 'test'
+  ...
+# Subtest: recovery archives old admissions and payment outboxes and rejects stale attempt results
+ok 6 - recovery archives old admissions and payment outboxes and rejects stale attempt results
+  ---
+  duration_ms: 2845.6326
+  type: 'test'
+  ...
+# Subtest: PostgreSQL ledger accumulates from day one, keeps seller scores and rolls back invalid transfers
+ok 7 - PostgreSQL ledger accumulates from day one, keeps seller scores and rolls back invalid transfers
+  ---
+  duration_ms: 1733.9425
+  type: 'test'
+  ...
+# Subtest: job reservations are idempotent and canonical counters require confirmed admission
+ok 8 - job reservations are idempotent and canonical counters require confirmed admission
+  ---
+  duration_ms: 2174.678
+  type: 'test'
+  ...
+# Subtest: raw grid validation and device signature verification reject mutations and wrong leases
+ok 9 - raw grid validation and device signature verification reject mutations and wrong leases
+  ---
+  duration_ms: 17.7349
+  type: 'test'
+  ...
+# Subtest: fee conservation includes rounding dust and encrypted outbox detects tampering
+ok 10 - fee conservation includes rounding dust and encrypted outbox detects tampering
+  ---
+  duration_ms: 2.3531
+  type: 'test'
+  ...
+# Subtest: quote-bound payments reject wrong asset, over-budget payments, altered spender and live submission by default
+ok 11 - quote-bound payments reject wrong asset, over-budget payments, altered spender and live submission by default
+  ---
+  duration_ms: 2.6794
+  type: 'test'
+  ...
+# Subtest: finalized indexing is idempotent and halts on a changed historical block hash
+ok 12 - finalized indexing is idempotent and halts on a changed historical block hash
+  ---
+  duration_ms: 2125.6268
+  type: 'test'
+  ...
+# Subtest: audit fixes reject dust registration and wrong vaults, preserve lifetime scores and require accepted ownership
+ok 13 - audit fixes reject dust registration and wrong vaults, preserve lifetime scores and require accepted ownership
+  ---
+  duration_ms: 3071.8132
+  type: 'test'
+  ...
+# Subtest: external Uniswap protocol fees preserve buy and sell liveness in both currency orders
+ok 14 - external Uniswap protocol fees preserve buy and sell liveness in both currency orders
+  ---
+  duration_ms: 14320.8337
+  type: 'test'
+  ...
+# Subtest: accepted swarm output is independently signed, durably submitted and minted automatically on a local chain
+ok 15 - accepted swarm output is independently signed, durably submitted and minted automatically on a local chain
+  ---
+  duration_ms: 9272.4602
+  type: 'test'
+  ...
+# Subtest: emergency recovery is admin-only, delayed, cancellable and permanently retires the old controller
+ok 16 - emergency recovery is admin-only, delayed, cancellable and permanently retires the old controller
+  ---
+  duration_ms: 3240.4681
+  type: 'test'
+  ...
+# Subtest: delayed atomic controller migration preserves the token, NFTs, scores, requests and pending job
+ok 17 - delayed atomic controller migration preserves the token, NFTs, scores, requests and pending job
+  ---
+  duration_ms: 5491.7439
+  type: 'test'
+  ...
+# Subtest: creation emergency recovery cannot withdraw phase II holder rewards
+ok 18 - creation emergency recovery cannot withdraw phase II holder rewards
+  ---
+  duration_ms: 2832.926
+  type: 'test'
+  ...
+# Subtest: the unchanged v4 pool and swap router keep trading across controller replacement
+ok 19 - the unchanged v4 pool and swap router keep trading across controller replacement
+  ---
+  duration_ms: 8703.651
+  type: 'test'
+  ...
+# Subtest: migration before NFT \#1000 preserves the irreversible fee switch and original rewards distributor
+ok 20 - migration before NFT \#1000 preserves the irreversible fee switch and original rewards distributor
+  ---
+  duration_ms: 3486.8056
+  type: 'test'
+  ...
+# Subtest: refund-backed recovery preserves recipient and NFT number and rejects reused requests
+ok 21 - refund-backed recovery preserves recipient and NFT number and rejects reused requests
+  ---
+  duration_ms: 3078.7899
+  type: 'test'
+  ...
+# Subtest: fully scanned empty snapshots advance only to the earliest later funding block
+ok 22 - fully scanned empty snapshots advance only to the earliest later funding block
+  ---
+  duration_ms: 3089.6654
+  type: 'test'
+  ...
+# Subtest: selected contract wallets receive their NFT even when receiver callbacks reject
+ok 23 - selected contract wallets receive their NFT even when receiver callbacks reject
+  ---
+  duration_ms: 2840.0004
+  type: 'test'
+  ...
+# Subtest: snapshot balance minimum rejects historical leaders below 10,000 and preserves later snapshot progress
+ok 24 - snapshot balance minimum rejects historical leaders below 10,000 and preserves later snapshot progress
+  ---
+  duration_ms: 3719.0226
+  type: 'test'
+  ...
+# Subtest: fixed supply, cutoff scores, exclusions, operator restrictions and exact base NFT
+ok 25 - fixed supply, cutoff scores, exclusions, operator restrictions and exact base NFT
+  ---
+  duration_ms: 3069.4569
+  type: 'test'
+  ...
+# Subtest: seeded \#999 state tests atomic \#1000, permanent routing, proportional rewards and seller credits
+ok 26 - seeded \#999 state tests atomic \#1000, permanent routing, proportional rewards and seller credits
+  ---
+  duration_ms: 3972.6448
+  type: 'test'
+  ...
+# Subtest: real Uniswap v4 PoolManager hook buys and sells charge only the configured 4% in IMD
+ok 27 - real Uniswap v4 PoolManager hook buys and sells charge only the configured 4% in IMD
+  ---
+  duration_ms: 8224.2797
+  type: 'test'
+  ...
+# Subtest: single-sided launch works in both currency orientations and liquidity stays permanently locked
+ok 28 - single-sided launch works in both currency orientations and liquidity stays permanently locked
+  ---
+  duration_ms: 14645.5334
+  type: 'test'
+  ...
+# Subtest: artifact signatures bind chain, controller, request, art and expiration
+ok 29 - artifact signatures bind chain, controller, request, art and expiration
+  ---
+  duration_ms: 2130.5923
+  type: 'test'
+  ...
+# Subtest: canonical v4 Quoter matches atomic router trades at the approved price without persisting quote fees
+ok 30 - canonical v4 Quoter matches atomic router trades at the approved price without persisting quote fees
+  ---
+  duration_ms: 8236.6259
+  type: 'test'
+  ...
+# Subtest: the generated ten-contract unsigned deployment plan executes locally and seeds the approved locked pool
+ok 31 - the generated ten-contract unsigned deployment plan executes locally and seeds the approved locked pool
+  ---
+  duration_ms: 16007.6342
+  type: 'test'
+  ...
+# Subtest: holder snapshots preserve scores, require cutoff balances and break exact ties by address
+ok 32 - holder snapshots preserve scores, require cutoff balances and break exact ties by address
+  ---
+  duration_ms: 2606.8798
+  type: 'test'
+  ...
+# Subtest: mismatched immutable fee and collection links cannot be sealed into the deployment
+ok 33 - mismatched immutable fee and collection links cannot be sealed into the deployment
+  ---
+  duration_ms: 2000.1641
+  type: 'test'
+  ...
+# Subtest: independent evidence rejects injected objectives, altered base, history and unapproved skills
+ok 34 - independent evidence rejects injected objectives, altered base, history and unapproved skills
+  ---
+  duration_ms: 8.1558
+  type: 'test'
+  ...
+# Subtest: accepted named files preserve raw frames and animation metadata without redrawing
+ok 35 - accepted named files preserve raw frames and animation metadata without redrawing
+  ---
+  duration_ms: 7.5424
+  type: 'test'
+  ...
+# Subtest: artifact adapter rejects rejected attempts, altered files, unrelated jobs and malformed metadata
+ok 36 - artifact adapter rejects rejected attempts, altered files, unrelated jobs and malformed metadata
+  ---
+  duration_ms: 3.2138
+  type: 'test'
+  ...
+# Subtest: IMD reads enforce byte limits on streamed responses and forbid download redirects
+ok 37 - IMD reads enforce byte limits on streamed responses and forbid download redirects
+  ---
+  duration_ms: 8.27
+  type: 'test'
+  ...
+# Subtest: unconfigured signer rejects signing and disabled worker performs no external actions
+ok 38 - unconfigured signer rejects signing and disabled worker performs no external actions
+  ---
+  duration_ms: 224.3886
+  type: 'test'
+  ...
+# Subtest: approved valuation rounds to the supported price without pretending reserves exist
+ok 39 - approved valuation rounds to the supported price without pretending reserves exist
+  ---
+  duration_ms: 1.3287
+  type: 'test'
+  ...
+# Subtest: either address ordering preserves the same IMD price instead of its reciprocal
+ok 40 - either address ordering preserves the same IMD price instead of its reciprocal
+  ---
+  duration_ms: 3.4625
+  type: 'test'
+  ...
+# Subtest: invalid targets, ticks and ambiguous currency addresses fail closed
+ok 41 - invalid targets, ticks and ambiguous currency addresses fail closed
+  ---
+  duration_ms: 2.243
+  type: 'test'
+  ...
+# Subtest: ETH quotes never fall through to the single-pool IMD quoter
+ok 42 - ETH quotes never fall through to the single-pool IMD quoter
+  ---
+  duration_ms: 230.8304
+  type: 'test'
+  ...
+1..42
+# tests 42
+# suites 0
+# pass 42
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 175855.4258

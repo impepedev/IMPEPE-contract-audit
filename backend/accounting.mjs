@@ -10,9 +10,10 @@ export async function applyTransfer(db,{chainId,from,to,value,timestamp,blockNum
   await db.query('INSERT INTO holders(chain_id,address,balance,score,last_timestamp,first_block) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(chain_id,address) DO UPDATE SET balance=EXCLUDED.balance,score=EXCLUDED.score,last_timestamp=EXCLUDED.last_timestamp',[chainId,address,balance.toString(),score.toString(),timestamp,blockNumber]);
  }
 }
-export function rank(rows,cutoffTimestamp,excluded=[],allocated=[]) {
+export const MINIMUM_HOLDER_BALANCE = 10_000n * 10n ** 18n;
+export function rank(rows,cutoffTimestamp,excluded=[],allocated=[],minimumBalance=MINIMUM_HOLDER_BALANCE) {
  const blocked=new Set([...excluded,...allocated].map(a=>a.toLowerCase()));
- return rows.filter(row=>BigInt(row.balance)>0n&&!blocked.has(row.address.toLowerCase())).map(row=>{
+ return rows.filter(row=>BigInt(row.balance)>=minimumBalance&&!blocked.has(row.address.toLowerCase())).map(row=>{
   const elapsed=BigInt(cutoffTimestamp)-BigInt(row.last_timestamp);if(elapsed<0n)throw new Error('Cutoff predates current accounting Use a historical replay');
   return {address:row.address,score:(BigInt(row.score)+BigInt(row.balance)*elapsed).toString(),balance:row.balance};
  }).sort((a,b)=>BigInt(a.score)>BigInt(b.score)?-1:BigInt(a.score)<BigInt(b.score)?1:a.address.toLowerCase().localeCompare(b.address.toLowerCase()));

@@ -3,10 +3,12 @@ pragma solidity 0.8.26;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {CreationController} from "./CreationController.sol";
 import {RewardsDistributor} from "./RewardsDistributor.sol";
-contract FeeRouter is Ownable, ReentrancyGuard {
+interface IFeeHook { function router() external view returns(address); }
+contract FeeRouter is Ownable2Step, ReentrancyGuard {
     using SafeERC20 for IERC20;
     IERC20 public immutable imd;
     CreationController public creation;
@@ -63,7 +65,7 @@ contract FeeRouter is Ownable, ReentrancyGuard {
         money.forceApprove(address(distributor), type(uint256).max);
     }
     function configureHook(address value) external onlyOwner {
-        require(hook == address(0) && value.code.length > 0, "hook");
+        require(hook == address(0) && value.code.length > 0 && IFeeHook(value).router() == address(this), "hook");
         hook = value;
     }
     function scheduleControllerMigration(CreationController replacement) external onlyOwner {
@@ -119,12 +121,6 @@ contract FeeRouter is Ownable, ReentrancyGuard {
         if (escrow > 0) next.deposit(escrow);
         emit ControllerMigrated(address(previous), address(next), escrow);
     }
-    function route(uint256 grossImd) external nonReentrant returns (uint256 fee) {
-        require(msg.sender == hook, "hook");
-        fee = (grossImd * 4) / 100;
-        if (fee == 0) return 0;
-        distribute(grossImd, (grossImd * 3) / 100, fee - (grossImd * 3) / 100);
-    }
     function routeAmounts(uint256 allocation, uint256 protocol) external nonReentrant {
         require(msg.sender == hook, "hook");
         distribute(0, allocation, protocol);
@@ -144,4 +140,5 @@ contract FeeRouter is Ownable, ReentrancyGuard {
         if (protocol > 0) imd.safeTransfer(protocolRecipient, protocol);
         emit FeesRouted(grossImd, allocation, protocol, completed);
     }
+    function renounceOwnership() public override onlyOwner { revert("ownership required"); }
 }

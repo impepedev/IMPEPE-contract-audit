@@ -1,7 +1,8 @@
 import {pathToFileURL} from 'node:url';
 import {Contract,JsonRpcProvider,Wallet,keccak256,toUtf8Bytes,AbiCoder} from 'ethers';import {createPublicClient,http} from 'viem';import {mainnet} from 'viem/chains';import {privateKeyToAccount} from 'viem/accounts';import {toClientEvmSigner} from '@x402/evm';
 import {completeArtwork,reconcileMints} from './submit-art.mjs';
-import {loadConfig} from './config.mjs';import {database} from './db.mjs';import {IMDClient} from './imd.mjs';import {creativeBrief,sha} from './art.mjs';import {canonical,preparePayment,submitPrepared} from './payment.mjs';import {reserveJob,recordAdmission,persistOutbox,syncRecoveredJob,encrypt,decrypt} from './jobs.mjs';
+import {expectedCreationInput} from './creation-input.mjs';
+import {loadConfig} from './config.mjs';import {database} from './db.mjs';import {IMDClient} from './imd.mjs';import {creativeBrief,sha} from './art.mjs';import {canonical,validateChallenge,preparePayment,submitPrepared} from './payment.mjs';import {reserveJob,recordAdmission,persistOutbox,syncRecoveredJob,encrypt,decrypt} from './jobs.mjs';
 const controllerAbi=['function paused() view returns(bool)','function retired() view returns(bool)','function nextJobId() view returns(uint256)','function totalFunded() view returns(uint256)','function jobBudget() view returns(uint256)','function settlementBlocks() view returns(uint256)','function operator() view returns(address)','function paymentRecipient() view returns(address)','function jobs(uint256) view returns(uint64 cutoff,uint64 time,uint256 cursor,uint256 count,address winner,uint256 bestScore,bytes32 requestId,bool selected,bool paid,bool finalized)','function attempts(uint256) view returns(uint256)','function advanceEmptySnapshot()','function openNextJob()','function confirmFinality(bytes)','function scan(uint256)','function payJob()','function bindRequest(bytes32)'];
 async function cycleUnlocked({config,db,provider,wallet,paymentSigner,imd,policy,assertLock=()=>{}}) {
  assertLock();
@@ -23,22 +24,23 @@ async function cycleUnlocked({config,db,provider,wallet,paymentSigner,imd,policy
  if(!job.selected){await(await controller.scan(125)).wait();job=await controller.jobs(id);if(!job.selected){if(job.cursor===job.count&&job.winner==='0x'+'0'.repeat(40)){try{await controller.advanceEmptySnapshot.staticCall();}catch{return{status:'awaiting_next_funding_snapshot'};}await(await controller.advanceEmptySnapshot()).wait();return{status:'snapshot_advanced'};}return {status:'selecting'};}}
  const attempt=Number(await controller.attempts(id));const confirmedAttempt=Number(await controller.attempts(id,{blockTag:Number(BigInt(finalized.number))}));if(attempt!==confirmedAttempt)return{status:'awaiting_recovery_finality'};const confirmedJob=await controller.jobs(id,{blockTag:Number(BigInt(finalized.number))});if(!confirmedJob.selected||confirmedJob.cutoff!==job.cutoff||confirmedJob.winner!==job.winner)return{status:'awaiting_selection_finality'};await syncRecoveredJob(db,{id,attempt,cutoff:job.cutoff.toString(),recipient:job.winner});
  let row=await reserveJob(db,{id,attempt,cutoff:job.cutoff.toString(),recipient:job.winner});
- const previous=(await db.query("SELECT token_id,artifact_hash,receipt->'manifest' AS manifest FROM artwork_jobs WHERE status='minted' AND token_id<$1 ORDER BY token_id DESC LIMIT 12",[id])).rows.reverse();const brief=creativeBrief(id,policy.baseGrid,previous);brief.outputManifest={v:1,tokenId:id,artifactHash:'SHA-256 of raw RGB bytes, lowercase 64 hex',durationMs:'0 for static or 2000-20000 for animation',effect:'0 for static or integer 1-13 for animation',holyGrail:id===1000};const input={objective:JSON.stringify(brief),skill:policy.artSkill,github:false,outputs:[{name:'art',path:'artifacts/impepe.rgb',mediaType:'application/octet-stream'},{name:'manifest',path:'artifacts/manifest.json',mediaType:'application/json'}]};
+ const input=await expectedCreationInput(provider,config.collectionAddress,id,policy.artSkill);
  if(!row.order_id){const quote=await imd.quote(row.request_key,input);const q=quote.order?.quote;if(!q||q.action!=='job.open'||BigInt(q.payment.amount)!==budget||q.payment.asset.toLowerCase()!==config.imdAddress.toLowerCase())throw new Error('IMD quote does not match fixed job budget');await db.query("UPDATE artwork_jobs SET order_id=$2,status='quoted',updated_at=NOW() WHERE token_id=$1",[id,quote.order.id]);row={...row,order_id:quote.order.id};}
  if(!row.admitted_verified){
   const observed=await imd.order(row.order_id);
   if(observed.status==='admitted'){await recordAdmission(db,id,observed,attempt);}
   else {
    if(['expired','payment_failed'].includes(observed.status))throw new Error('IMD_ORDER_REQUIRES_RECOVERY');
-   assertLock();if(!job.paid)await(await controller.payJob()).wait();
+   const challenge=await imd.challenge(row.order_id);const paymentPolicy={orderId:row.order_id,inputHash:sha(Buffer.from(canonical(input))),imdAddress:config.imdAddress,payTo:policy.payTo,spender:policy.spender,maxAmount:budget.toString()};validateChallenge(challenge,paymentPolicy);
    let outbox=(await db.query("SELECT * FROM transaction_outbox WHERE token_id=$1 AND operation='imd-payment' AND attempt=$2",[id,attempt])).rows[0];
    if(!outbox){
-    const money=new Contract(config.imdAddress,['function allowance(address,address) view returns(uint256)','function approve(address,uint256) returns(bool)'],wallet);
-    if(await money.allowance(wallet.address,policy.permit2)<budget)await(await money.approve(policy.permit2,budget)).wait();
-    const challenge=await imd.challenge(row.order_id);const envelope=await preparePayment(challenge,{orderId:row.order_id,inputHash:sha(Buffer.from(canonical(input))),imdAddress:config.imdAddress,payTo:policy.payTo,spender:policy.spender,maxAmount:budget.toString()},paymentSigner);
+    const envelope=await preparePayment(challenge,paymentPolicy,paymentSigner);
     outbox=await persistOutbox(db,id,'imd-payment',encrypt(envelope,policy.encryptionKey),attempt);
    }
    if(Number(await controller.attempts(id))!==attempt)throw new Error('Recovery changed during payment preparation');
+   assertLock();if(!job.paid)await(await controller.payJob()).wait();
+   const money=new Contract(config.imdAddress,['function allowance(address,address) view returns(uint256)','function approve(address,uint256) returns(bool)'],wallet);
+   if(await money.allowance(wallet.address,policy.permit2)<budget)await(await money.approve(policy.permit2,budget)).wait();
    assertLock();await submitPrepared(imd,decrypt(outbox.payload,policy.encryptionKey),{enabled:true});
    const admitted=await imd.order(row.order_id);if(admitted.status!=='admitted')return {status:'awaiting_admission'};await recordAdmission(db,id,admitted,attempt);
   }

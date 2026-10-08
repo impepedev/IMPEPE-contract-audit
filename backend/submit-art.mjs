@@ -2,6 +2,7 @@ import {pathToFileURL} from 'node:url';
 import fs from 'node:fs/promises';
 import {Contract,JsonRpcProvider,Wallet,AbiCoder,keccak256,toUtf8Bytes,Transaction,Interface} from 'ethers';
 import {loadConfig} from './config.mjs';import {database} from './db.mjs';import {IMDClient} from './imd.mjs';
+import {expectedCreationInput} from './creation-input.mjs';
 import {acceptedArtwork} from './evidence.mjs';import {encrypt,decrypt,persistOutbox} from './jobs.mjs';
 const controllerAbi=['function paused() view returns(bool)','function retired() view returns(bool)','function baseHash() view returns(bytes32)','function operator() view returns(address)','function jobs(uint256) view returns(uint64 cutoff,uint64 time,uint256 cursor,uint256 count,address winner,uint256 bestScore,bytes32 requestId,bool selected,bool paid,bool finalized)','function attempts(uint256) view returns(uint256)','function nextJobId() view returns(uint256)','function verifier() view returns(address)','function submit(bytes,uint16,uint8,bytes)'];
 const mintEvents=new Interface(['event ArtworkCommitted(uint256 indexed id,address indexed recipient,bytes32 artifactHash)']);
@@ -12,7 +13,7 @@ export async function prepareSubmission({db,provider,config,evidence,imd=new IMD
  if(await controller.paused()||await controller.retired()||Number(await controller.attempts(evidence.tokenId))!==row.attempt||Number(await controller.nextJobId())!==evidence.tokenId)throw new Error('STALE_OR_INACTIVE_CREATION');
  const bound=await controller.jobs(evidence.tokenId),requestId=keccak256(toUtf8Bytes(row.imd_job_id));
  if(!bound.selected||!bound.paid||bound.requestId!==requestId||bound.winner.toLowerCase()!==row.recipient)throw new Error('BOUND_JOB_MISMATCH');
- const result=await acceptedArtwork({imd,imdJobId:row.imd_job_id,tokenId:evidence.tokenId,baseHash:(await controller.baseHash()).slice(2),payer:await controller.operator()});
+ const result=await acceptedArtwork({imd,imdJobId:row.imd_job_id,tokenId:evidence.tokenId,baseHash:(await controller.baseHash()).slice(2),payer:await controller.operator(),expectedInput:await expectedCreationInput(provider,config.collectionAddress,evidence.tokenId,config.artSkill)});
  if(result.artifactHash!==evidence.artifactHash||result.commitmentHash!==evidence.commitmentHash||result.manifest.effect!==evidence.effect||result.manifest.durationMs!==evidence.durationMs)throw new Error('SIGNED_ART_MISMATCH');
  const verifier=new Contract(await controller.verifier(),['function verify(uint256,bytes32,bytes32,bytes) view returns(bool)'],provider);
  if(verifier.target.toLowerCase()!==evidence.verifier?.toLowerCase())throw new Error('VERIFIER_MISMATCH');

@@ -2,6 +2,7 @@ import {pathToFileURL} from 'node:url';
 import Fastify from 'fastify';
 import {timingSafeEqual} from 'node:crypto';
 import {Contract,JsonRpcProvider,Wallet,keccak256,toUtf8Bytes,isAddress} from 'ethers';
+import {expectedCreationInput} from './creation-input.mjs';
 import {acceptedArtwork} from './evidence.mjs';
 import {IMDClient} from './imd.mjs';
 const types={Artifact:[{name:'tokenId',type:'uint256'},{name:'requestId',type:'bytes32'},{name:'artifactHash',type:'bytes32'},{name:'controller',type:'address'},{name:'expiresAt',type:'uint256'}],Finalized:[{name:'blockNumber',type:'uint256'},{name:'blockHash',type:'bytes32'},{name:'controller',type:'address'},{name:'expiresAt',type:'uint256'}]};
@@ -18,7 +19,7 @@ export async function signingContext({provider,signer,config}){
 export async function attestArtwork({provider,signer,config,imd,tokenId,attempt,imdJobId}){
  const ctx=await signingContext({provider,signer,config});if(Number(await ctx.controller.nextJobId())!==tokenId||Number(await ctx.controller.attempts(tokenId))!==attempt)throw new Error('STALE_ART_ATTEMPT');
  const job=await ctx.controller.jobs(tokenId),requestId=keccak256(toUtf8Bytes(imdJobId));if(!job.selected||!job.paid||!job.finalized||job.requestId!==requestId)throw new Error('BOUND_PAID_JOB_REQUIRED');
- const art=await acceptedArtwork({imd,imdJobId,tokenId,baseHash:(await ctx.controller.baseHash()).slice(2),payer:ctx.operator});
+ const art=await acceptedArtwork({imd,imdJobId,tokenId,baseHash:(await ctx.controller.baseHash()).slice(2),payer:ctx.operator,expectedInput:await expectedCreationInput(provider,config.collectionAddress,tokenId,config.artSkill)});
  if(await ctx.collection.usedArtifact(`0x${art.artifactHash}`))throw new Error('DUPLICATE_ART');
  const message={tokenId,requestId,artifactHash:art.commitmentHash,controller:config.controllerAddress,expiresAt:ctx.expiresAt};const signature=await signer.signTypedData(ctx.domain,{Artifact:types.Artifact},message);
  return {tokenId,attempt,imdJobId,controller:config.controllerAddress,verifier:ctx.domain.verifyingContract,artifactHash:art.artifactHash,commitmentHash:art.commitmentHash,durationMs:art.manifest.durationMs,effect:art.manifest.effect,manifest:art.manifest,provenance:art.provenance,expiresAt:ctx.expiresAt,attestorSignature:signature};
@@ -37,6 +38,6 @@ export function buildAttestor({provider,signer,config,imd=new IMDClient({}),serv
  return app;
 }
 if(process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href){
- const config={signingEnabled:process.env.ATTESTOR_SIGNING_ENABLED==='true',chainId:Number(process.env.CHAIN_ID||1),controllerAddress:process.env.CONTROLLER_ADDRESS,collectionAddress:process.env.COLLECTION_ADDRESS,tokenAddress:process.env.TOKEN_ADDRESS};const provider=process.env.ETH_RPC_URL?new JsonRpcProvider(process.env.ETH_RPC_URL):null;const signer=process.env.ATTESTOR_PRIVATE_KEY?new Wallet(process.env.ATTESTOR_PRIVATE_KEY,provider):null;
+ const config={artSkill:process.env.IMD_ART_SKILL,signingEnabled:process.env.ATTESTOR_SIGNING_ENABLED==='true',chainId:Number(process.env.CHAIN_ID||1),controllerAddress:process.env.CONTROLLER_ADDRESS,collectionAddress:process.env.COLLECTION_ADDRESS,tokenAddress:process.env.TOKEN_ADDRESS};const provider=process.env.ETH_RPC_URL?new JsonRpcProvider(process.env.ETH_RPC_URL):null;const signer=process.env.ATTESTOR_PRIVATE_KEY?new Wallet(process.env.ATTESTOR_PRIVATE_KEY,provider):null;
  const app=buildAttestor({provider,signer,config,serviceToken:process.env.ATTESTOR_SERVICE_TOKEN});await app.listen({host:process.env.ATTESTOR_HOST||'127.0.0.1',port:Number(process.env.ATTESTOR_PORT||4192)});console.log('Independent attestor on localhost; configure its separate signer before use');for(const sig of ['SIGINT','SIGTERM'])process.on(sig,async()=>{await app.close();provider?.destroy();process.exit(0);});
 }

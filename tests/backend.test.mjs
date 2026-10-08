@@ -5,6 +5,10 @@ import {reserveJob,recordAdmission,persistOutbox,syncRecoveredJob,encrypt,decryp
 import {preparePayment,validateChallenge,canonical,submitPrepared} from '../backend/payment.mjs';
 import {indexBatch} from '../backend/indexer.mjs';import {Interface} from 'ethers';
 const alice=`0x${'1'.repeat(40)}`,bob=`0x${'2'.repeat(40)}`,zero=`0x${'0'.repeat(40)}`;
+test('public leaderboard requires the same 10,000 token minimum as contract selection',()=>{
+ const minimum=10_000n*10n**18n,rows=[{address:alice,balance:(minimum-1n).toString(),score:'999999999999999999999999999999',last_timestamp:0},{address:bob,balance:minimum.toString(),score:'0',last_timestamp:0}];
+ assert.deepEqual(rank(rows,100).map(row=>row.address),[bob]);
+});
 async function database(){const db=new PGlite();await db.exec(await fs.readFile(new URL('../backend/schema.sql',import.meta.url),'utf8'));return db;}
 
 test('recovery archives old admissions and payment outboxes and rejects stale attempt results',async()=>{
@@ -23,10 +27,10 @@ test('PostgreSQL ledger accumulates from day one, keeps seller scores and rolls 
   await db.transaction(tx=>applyTransfer(tx,{chainId:1,from:zero,to:alice,value:'100',timestamp:0,blockNumber:1}));
   await db.transaction(tx=>applyTransfer(tx,{chainId:1,from:alice,to:bob,value:'50',timestamp:100,blockNumber:2}));
   let rows=(await db.query('SELECT address,balance::text,score::text,last_timestamp FROM holders')).rows;
-  const ranking=rank(rows,200);assert.equal(ranking[0].address,alice);assert.equal(ranking[0].score,'15000');assert.equal(ranking[1].score,'5000');
+  const ranking=rank(rows,200,[],[],1n);assert.equal(ranking[0].address,alice);assert.equal(ranking[0].score,'15000');assert.equal(ranking[1].score,'5000');
   await assert.rejects(db.transaction(tx=>applyTransfer(tx,{chainId:1,from:bob,to:alice,value:'500',timestamp:300,blockNumber:3})),/incomplete/);
   assert.equal((await db.query('SELECT balance::text FROM holders WHERE address=$1',[bob])).rows[0].balance,'50');
-  assert.equal(rank(rows,200,[alice])[0].address,bob);assert.equal(rank(rows,200,[],[alice])[0].address,bob);
+  assert.equal(rank(rows,200,[alice],[],1n)[0].address,bob);assert.equal(rank(rows,200,[],[alice],1n)[0].address,bob);
  }finally{await db.close();}
 });
 test('job reservations are idempotent and canonical counters require confirmed admission',async()=>{

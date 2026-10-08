@@ -1,6 +1,7 @@
 import fs from 'node:fs';import {ContractFactory,Interface,getCreateAddress,getCreate2Address,keccak256,toBeHex,zeroPadValue,parseEther,sha256,isAddress} from 'ethers';
 import {compile} from './compile.mjs';
 import {openingPrice} from './opening-price.mjs';
+import {verifyAuditApproval} from './verify-audit-approval.mjs';
 const config=JSON.parse(fs.readFileSync(process.argv[2]||'deployment.json','utf8'));const blocked=[];
 const outputDir=process.argv[3]||'artifacts';
 for(const field of ['poolManager','artifactAttestor'])if(!config[field]||!isAddress(config[field].toLowerCase()))blocked.push(`${field} required`);
@@ -9,6 +10,7 @@ if(config.liquidityModel!=='single_sided_permanent')blocked.push('Approved singl
 let pricePreview;try{pricePreview=openingPrice({targetOpeningFdvImd:config.targetOpeningFdvImd,fixedSupply:config.fixedSupply,tickSpacing:config.tickSpacing});}catch(error){blocked.push(error.message);}
 if(!config.artifactTrustApproved)blocked.push('Artifact attestation trust boundary requires approval');
 if(config.chainId===1&&(!config.auditApproved||!config.legalReviewApproved))blocked.push('Mainnet requires audit and specialist legal/regulatory review');
+if(config.chainId===1&&config.auditApproved){try{verifyAuditApproval();}catch(error){blocked.push(error.message);}}
 fs.mkdirSync(outputDir,{recursive:true});
 if(pricePreview)fs.writeFileSync(`${outputDir}/opening-price.json`,JSON.stringify(pricePreview,null,2));
 if(blocked.length){fs.writeFileSync(`${outputDir}/deployment-readiness.json`,JSON.stringify({status:'not_ready',blocked},null,2));console.log(JSON.stringify({status:'not_ready',blocked},null,2));process.exitCode=1;}else{

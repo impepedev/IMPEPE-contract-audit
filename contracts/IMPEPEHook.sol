@@ -11,8 +11,6 @@ import {Currency} from "@uniswap/v4-core/src/types/Currency.sol";
 import {BalanceDelta, BalanceDeltaLibrary} from "@uniswap/v4-core/src/types/BalanceDelta.sol";
 import {BeforeSwapDelta, toBeforeSwapDelta} from "@uniswap/v4-core/src/types/BeforeSwapDelta.sol";
 import {FeeRouter} from "./FeeRouter.sol";
-import {StateLibrary} from "@uniswap/v4-core/src/libraries/StateLibrary.sol";
-import {PoolIdLibrary} from "@uniswap/v4-core/src/types/PoolId.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 contract IMPEPEHook is ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -140,8 +138,6 @@ contract IMPEPEHook is ReentrancyGuard {
         bytes calldata
     ) external onlyManager returns (bytes4, BeforeSwapDelta, uint24) {
         check(key);
-        (, , uint24 protocolFee, ) = StateLibrary.getSlot0(manager, PoolIdLibrary.toId(key));
-        require(protocolFee == 0, "additional pool protocol fee unsupported");
         require(
             params.amountSpecified < 0 && params.amountSpecified != type(int256).min,
             "exact input only"

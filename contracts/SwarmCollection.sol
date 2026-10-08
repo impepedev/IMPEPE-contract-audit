@@ -2,6 +2,7 @@
 pragma solidity 0.8.26;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
@@ -19,7 +20,7 @@ interface IMigrationController {
     function migrationImported() external view returns (bool);
     function collection() external view returns (address);
 }
-contract SwarmCollection is ERC721, Ownable, ReentrancyGuard {
+contract SwarmCollection is ERC721, Ownable2Step, ReentrancyGuard {
     uint256 public constant MAX_SUPPLY = 1000;
     uint256 public totalSupply;
     address public controller;
@@ -122,4 +123,5 @@ contract SwarmCollection is ERC721, Ownable, ReentrancyGuard {
         from = super._update(to, id, auth);
         if (address(rewards) != address(0)) rewards.onTransfer(from, to, id);
     }
+    function renounceOwnership() public override onlyOwner { revert("ownership required"); }
 }
