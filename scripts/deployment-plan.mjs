@@ -9,7 +9,8 @@ if(!Number.isSafeInteger(config.deployerNonce)||config.deployerNonce<0)blocked.p
 if(config.liquidityModel!=='single_sided_permanent')blocked.push('Approved single-sided permanent liquidity model required');
 let pricePreview;try{pricePreview=openingPrice({targetOpeningFdvImd:config.targetOpeningFdvImd,fixedSupply:config.fixedSupply,tickSpacing:config.tickSpacing});}catch(error){blocked.push(error.message);}
 if(!config.artifactTrustApproved)blocked.push('Artifact attestation trust boundary requires approval');
-if(config.chainId===1&&(!config.auditApproved||!config.legalReviewApproved))blocked.push('Mainnet requires audit and specialist legal/regulatory review');
+if(config.chainId===1&&!config.auditApproved)blocked.push('Mainnet audit approval required');
+if(config.chainId===1&&!config.legalReviewApproved)blocked.push('Specialist legal/regulatory review required');
 if(config.chainId===1&&config.auditApproved){try{verifyAuditApproval();}catch(error){blocked.push(error.message);}}
 fs.mkdirSync(outputDir,{recursive:true});
 if(pricePreview)fs.writeFileSync(`${outputDir}/opening-price.json`,JSON.stringify(pricePreview,null,2));

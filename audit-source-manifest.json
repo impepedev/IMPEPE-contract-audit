@@ -211,7 +211,7 @@
     },
     {
       "path": "scripts/deployment-plan.mjs",
-      "sha256": "853ccfa6917b97a49796d1bd8a7da3dd81de841e59a5c0f91ac0ba9cb008164d"
+      "sha256": "8592b897a7d422b86a76694f3639178f9c01d21aca5334907549bef750640071"
     },
     {
       "path": "scripts/contract-manifest.mjs",
