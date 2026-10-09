@@ -1,0 +1,18 @@
+{
+  "status": "verified",
+  "chainId": 1,
+  "contract": "IMDCreationController",
+  "contractAddress": "0xde25d66569eb05b7c73f61310d028838b820b570",
+  "transactionHash": "0xd3b5d8c899649fa299fd42ec5a7a42a9c98ddfdb2fedd10d7d73f5da561125c7",
+  "blockNumber": 26151683,
+  "gasUsed": "5362498",
+  "owner": "0x61aEFdAAa5FA9ac74AA0051238Fd4a37B1d24148",
+  "operator": "0x9A6dA9E6f2BEEF402C6A23E2fA1ee7c003cd31b4",
+  "verifier": "0x5a832701be1504094db39c0d01d65b293e0aba66",
+  "collection": "0x537d5ce0f449faa79affbdbb971cf444277a375a",
+  "imd": "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+  "jobBudgetImd": "0.5",
+  "settlementBlocks": 128,
+  "baseHash": "0xd89e5c58112898b244a551c5fd734389d109d81189ea8acc4ec584913814f69c",
+  "runtimeCodeHash": "0x6c74b1f5d12953f2fd8bcbf69eeb9ae4bce440402a8675b24dac15ce5bd36c4e"
+}

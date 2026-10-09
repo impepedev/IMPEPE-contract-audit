@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS chain_state (
  chain_id BIGINT PRIMARY KEY, next_block BIGINT NOT NULL, last_hash TEXT, observed_at TIMESTAMPTZ
 );
+ALTER TABLE chain_state ADD COLUMN IF NOT EXISTS token_address TEXT;
+ALTER TABLE chain_state ADD COLUMN IF NOT EXISTS scoring_start_block BIGINT;
 CREATE TABLE IF NOT EXISTS chain_blocks (
  chain_id BIGINT NOT NULL, number BIGINT NOT NULL, hash TEXT NOT NULL, parent_hash TEXT NOT NULL, timestamp BIGINT NOT NULL,
  PRIMARY KEY(chain_id,number), UNIQUE(chain_id,hash)
@@ -51,3 +53,6 @@ CREATE OR REPLACE VIEW swarm_job_history AS
 CREATE TABLE IF NOT EXISTS service_state (
  name TEXT PRIMARY KEY,status TEXT NOT NULL,observed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),error_code TEXT
 );
+
+ALTER TABLE chain_state ADD COLUMN IF NOT EXISTS fee_hook_address TEXT;
+ALTER TABLE chain_state ADD COLUMN IF NOT EXISTS fee_index_start BIGINT;

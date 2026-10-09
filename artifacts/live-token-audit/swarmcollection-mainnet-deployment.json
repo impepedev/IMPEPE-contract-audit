@@ -1,0 +1,11 @@
+{
+  "status": "verified",
+  "chainId": 1,
+  "contract": "SwarmCollection",
+  "contractAddress": "0x537d5ce0f449faa79affbdbb971cf444277a375a",
+  "transactionHash": "0xd21fe5a4ce2c02232956ffce550c37be4561d8806567fc816c90f3675b3fcc9f",
+  "blockNumber": 26151613,
+  "gasUsed": "2439732",
+  "owner": "0x61aEFdAAa5FA9ac74AA0051238Fd4a37B1d24148",
+  "runtimeCodeHash": "0x612ada11de4309b696c8e046fc27fbec6629e3ea6e0ac6641b77baea8380af5b"
+}

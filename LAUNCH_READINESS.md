@@ -1,5 +1,7 @@
 # IMPEPE launch readiness
 
+The active architecture is now the IMD standard launch adaptation described in IMD_LAUNCH_RUNBOOK.md. The v1.2 configuration and audit discussion below describe the prior implementation and must not be used as the active deployment sequence.
+
 Status: v1.2 audit remediation locally verified and accepted by the project owner without a second audit; legal review waived as a deployment gate by the owner on 8 October 2026; external deployment inputs remain outstanding
 
 ## Completed preparation

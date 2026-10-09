@@ -2,8 +2,10 @@ import fs from 'node:fs';import {ContractFactory,Interface,getCreateAddress,getC
 import {compile} from './compile.mjs';
 import {openingPrice} from './opening-price.mjs';
 import {verifyAuditApproval} from './verify-audit-approval.mjs';
+import {imdLaunchPlan} from './imd-launch-plan.mjs';
 const config=JSON.parse(fs.readFileSync(process.argv[2]||'deployment.json','utf8'));const blocked=[];
 const outputDir=process.argv[3]||'artifacts';
+if(config.launchRoute==='imd_standard'){await imdLaunchPlan(config,outputDir);process.exit(0);}
 for(const field of ['poolManager','artifactAttestor'])if(!config[field]||!isAddress(config[field].toLowerCase()))blocked.push(`${field} required`);
 if(!Number.isSafeInteger(config.deployerNonce)||config.deployerNonce<0)blocked.push('deployerNonce required from a fresh RPC observation');
 if(config.liquidityModel!=='single_sided_permanent')blocked.push('Approved single-sided permanent liquidity model required');

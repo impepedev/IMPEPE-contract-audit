@@ -1,0 +1,17 @@
+{
+  "address": "0x5108c5507dA225a4582E8629661b5D83d476aaCc",
+  "contractName": "contracts/IMPEPEFeeHook.sol:IMPEPEFeeHook",
+  "compiler": "0.8.26+commit.8a97fa7a.Emscripten.clang",
+  "optimizer": {
+    "enabled": true,
+    "runs": 200
+  },
+  "evmVersion": "cancun",
+  "license": "MIT",
+  "constructorArguments": "000000000000000000000000000000000004444c5dc75cb358380d2e3de08a900000000000000000000000005018f7d89e1433dbc0c64e29092e2fa16192905d0000000000000000000000008f45658fc5ad35ce4fd0c85b541412097d28ba52000000000000000000000000d34a99bc0f67ae1bbd63c660e6d0b0dd03e263b700000000000000000000000042a02182432b7de815085efdbed8a0173f813f28000000000000000000000000000000000000000000000000000000000000003c00000000000000000000000061aefdaaa5fa9ac74aa0051238fd4a37b1d24148",
+  "mainnetCreationBytecodeMatches": true,
+  "runtimeCodeHash": "0xb4b4513d53c8cb11498e6149243e51915babc9ff6f6ad056c4bf32c247c44b96",
+  "etherscanStatus": "verified",
+  "etherscanVerifiedAt": "2026-10-09T17:29:47.897Z",
+  "etherscanUrl": "https://etherscan.io/address/0x5108c5507dA225a4582E8629661b5D83d476aaCc#code"
+}

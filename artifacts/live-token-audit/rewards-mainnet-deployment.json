@@ -1,0 +1,12 @@
+{
+  "status": "verified",
+  "chainId": 1,
+  "contract": "RewardsDistributor",
+  "contractAddress": "0xea817217c31565a63c75c865eed8ba76a4ac72d5",
+  "transactionHash": "0x36cf29a4c524b1ce21cd8a5e35896d3fe11a5ba6e866cdae9ccc1aa31fa68ca4",
+  "blockNumber": 26151656,
+  "gasUsed": "825563",
+  "imd": "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+  "collection": "0x537d5ce0f449faa79affbdbb971cf444277a375a",
+  "runtimeCodeHash": "0xdc0c0594ac892891cd8efb2057e3691f96069a563402ed8315036113dabbf121"
+}

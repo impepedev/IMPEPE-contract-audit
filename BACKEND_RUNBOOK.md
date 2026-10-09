@@ -1,5 +1,7 @@
 # IMPEPE backend v0.1
 
+The active architecture is now the IMD standard launch adaptation described in IMD_LAUNCH_RUNBOOK.md. The v1.2 configuration and audit discussion below describe the prior implementation and must not be used as the active deployment sequence.
+
 The independent attestor must configure its own `IMD_ART_SKILL`, matching the approved worker skill. Both services reconstruct the full creative brief using the fixed genesis base and the last 12 on-chain artwork commitments. Accepted-job evidence must expose that skill and the exact objective; missing evidence stops signing. Verify these fields against a real paid artwork job before enabling live artwork submission
 
 ## What runs

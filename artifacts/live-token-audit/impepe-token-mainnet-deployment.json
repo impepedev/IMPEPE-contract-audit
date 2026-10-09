@@ -1,0 +1,12 @@
+{
+  "status": "verified",
+  "chainId": 1,
+  "contract": "IMPEPE",
+  "contractAddress": "0x5018f7d89e1433dbc0c64e29092e2fa16192905d",
+  "transactionHash": "0xfcc7dc92ed4c95840314270a701408d2a40184360d39834f8763d379cb45be71",
+  "blockNumber": 26153894,
+  "gasUsed": "539587",
+  "initialRecipient": "0x61aEFdAAa5FA9ac74AA0051238Fd4a37B1d24148",
+  "fixedSupply": "1000000000",
+  "runtimeCodeHash": "0x303caa066da4bff3d60fbabb30862f7d67a60bf9fc40504d7d5824b979e0a22f"
+}

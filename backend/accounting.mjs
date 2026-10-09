@@ -18,4 +18,4 @@ export function rank(rows,cutoffTimestamp,excluded=[],allocated=[],minimumBalanc
   return {address:row.address,score:(BigInt(row.score)+BigInt(row.balance)*elapsed).toString(),balance:row.balance};
  }).sort((a,b)=>BigInt(a.score)>BigInt(b.score)?-1:BigInt(a.score)<BigInt(b.score)?1:a.address.toLowerCase().localeCompare(b.address.toLowerCase()));
 }
-export function feeSplit(gross){gross=BigInt(gross);if(gross<0n)throw new Error('Negative gross');const total=gross*4n/100n,creation=gross*3n/100n;return{total,creation,protocol:total-creation};}
+export function feeSplit(gross){gross=BigInt(gross);if(gross<0n)throw new Error('Negative gross');const total=gross*3n/100n;return{total,creation:total,protocol:0n};}

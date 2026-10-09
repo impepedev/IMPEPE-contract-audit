@@ -1,8 +1,10 @@
 # IMPEPE contracts and backend
 
+The active IMD adaptation uses 88% liquidity, 10% swarm and 2% launch payer, with a 3% art/rewards hook alongside IMD's standard 1.25% pool fee. See [IMD_LAUNCH_ADAPTATION.md](IMD_LAUNCH_ADAPTATION.md) and [IMD_LAUNCH_RUNBOOK.md](IMD_LAUNCH_RUNBOOK.md). Active contract names are listed in the new deployment plan. The earlier v1.2 implementation remains below as historical reference; its audit acceptance does not cover the adaptation.
+
 Release v1.2 incorporates fixes from the completed IMD audit and is audit-approved under the project owner's acceptance of locally verified remediation without a second audit. See AUDIT_REMEDIATION.md and artifacts/audit-approval.json. No mainnet contracts have been deployed; deployment inputs are tracked in LAUNCH_READINESS.md. The original DOCX and prior visual assets are preserved
 
-## Accepted parameters
+## Historical v1.2 parameters
 
 Ethereum; fixed 1 billion IMPEPE with 18 decimals; 980 million reserved for the official IMPEPE/IMD liquidity position, and 20 million minted to the established deployer. The 1% protocol fee goes to that deployer. The provided separate address is the Swarm Operator. Wallet assignments are recorded in deployment.json; no private keys are included.
 

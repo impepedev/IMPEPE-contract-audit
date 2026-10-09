@@ -77,3 +77,12 @@ test('finalized indexing is idempotent and halts on a changed historical block h
   changed=true;await assert.rejects(indexBatch(db,provider,config),/HISTORY_MISMATCH/);assert.equal((await db.query('SELECT COUNT(*)::int AS n FROM chain_events')).rows[0].n,1);
  }finally{await db.close();}
 });
+test('fee indexing records gross volume once and pins its coverage to one hook',async()=>{
+ const db=await database();try{
+  const hook='0x3333333333333333333333333333333333333333',iface=new Interface(['event FeesAccrued(uint256 grossImd,uint256 allocation,uint256 protocol)']),event=iface.encodeEventLog(iface.getEvent('FeesAccrued'),[10000n,300n,100n]);
+  const provider={getNetwork:async()=>({chainId:1n}),send:async()=>({number:'0x1',timestamp:'0x64',hash:'0x'+'a'.repeat(64),parentHash:'0x'+'b'.repeat(64)}),getLogs:async filter=>{assert.ok(filter.address.includes(hook));return [{address:hook,topics:event.topics,data:event.data,index:0,transactionHash:'0x'+'d'.repeat(64)}];}};
+  const config={chainId:1,tokenAddress:alice,controllerAddress:bob,rpcUrl:'test',startBlock:1,launchRoute:'manual_v4',hookAddress:hook};await indexBatch(db,provider,config);await indexBatch(db,provider,config);
+  const state=(await db.query('SELECT * FROM chain_state')).rows[0];assert.equal(Number(state.fee_index_start),1);assert.equal(state.fee_hook_address,hook);const rows=(await db.query("SELECT data FROM chain_events WHERE kind='FeesAccrued'")).rows;assert.equal(rows.length,1);assert.equal(rows[0].data.grossImd,'10000');
+  await assert.rejects(indexBatch(db,provider,{...config,hookAddress:alice}),/FEE_INDEX_BOUNDARY_MISMATCH/);
+ }finally{await db.close();}
+});

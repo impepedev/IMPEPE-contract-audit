@@ -1,0 +1,22 @@
+{
+  "status": "verified",
+  "chainId": 1,
+  "contract": "IMPEPEFeeHook",
+  "contractAddress": "0x5108c5507dA225a4582E8629661b5D83d476aaCc",
+  "transactionHash": "0x593571a3a047f0b57432e44950d0bb9637a8814fab0231d80b0b0ce818976e4d",
+  "blockNumber": 26153969,
+  "gasUsed": "1413754",
+  "constructorArguments": [
+    "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    "0x5018f7d89e1433dbc0c64e29092e2fa16192905d",
+    "0x8f45658fc5ad35ce4fd0c85b541412097d28ba52",
+    "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+    "0x42a02182432b7de815085efdbed8a0173f813f28",
+    60,
+    "0x61aEFdAAa5FA9ac74AA0051238Fd4a37B1d24148"
+  ],
+  "create2Factory": "0x4e59b44847b379578588920cA78FbF26c0B4956C",
+  "salt": "0x00000000000000000000000000000000000000000000000000000000000051af",
+  "permissions": "0x2acc",
+  "runtimeCodeHash": "0xb4b4513d53c8cb11498e6149243e51915babc9ff6f6ad056c4bf32c247c44b96"
+}

@@ -1,0 +1,18 @@
+{
+  "status": "verified",
+  "chainId": 1,
+  "contract": "IMPEPELiquidityBootstrap",
+  "contractAddress": "0x8f45658fc5ad35ce4fd0c85b541412097d28ba52",
+  "transactionHash": "0x37a3fe15c4b5ef3267fac13438b3c0f1e84019be7fde61eb8f3b048cb18d6d64",
+  "blockNumber": 26153925,
+  "gasUsed": "2035928",
+  "owner": "0x61aEFdAAa5FA9ac74AA0051238Fd4a37B1d24148",
+  "constructorArguments": [
+    "0x61aEFdAAa5FA9ac74AA0051238Fd4a37B1d24148",
+    "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    "0x5018f7d89e1433dbc0c64e29092e2fa16192905d",
+    "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+    "0xde25d66569eb05b7c73f61310d028838b820b570"
+  ],
+  "runtimeCodeHash": "0x1a142be9bfa34864152e2901908751205c5de1e0be9b3e3ec08b9852d632e606"
+}

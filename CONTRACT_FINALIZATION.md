@@ -1,5 +1,7 @@
 # IMPEPE contract v1.2 source freeze
 
+The active architecture is now the IMD standard launch adaptation described in IMD_LAUNCH_RUNBOOK.md. The v1.2 configuration and audit discussion below describe the prior implementation and must not be used as the active deployment sequence.
+
 Date: 2026-10-08
 
 Status: IMD audit findings remediated and locally tested; project-owner audit approval without a second audit. See AUDIT_REMEDIATION.md and artifacts/audit-approval.json for scope and accepted design risks

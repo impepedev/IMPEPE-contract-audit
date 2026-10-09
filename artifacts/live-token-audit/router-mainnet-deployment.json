@@ -1,0 +1,14 @@
+{
+  "status": "verified",
+  "chainId": 1,
+  "contract": "IMDFeeRouter",
+  "contractAddress": "0x42a02182432b7de815085efdbed8a0173f813f28",
+  "transactionHash": "0xcbe447a135431e16d22b86c4adc4c390ba2bf7a9af1a29464d99e1107a1ff2f9",
+  "blockNumber": 26151712,
+  "gasUsed": "1490167",
+  "owner": "0x61aEFdAAa5FA9ac74AA0051238Fd4a37B1d24148",
+  "imd": "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+  "controller": "0xde25d66569eb05b7c73f61310d028838b820b570",
+  "rewards": "0xea817217c31565a63c75c865eed8ba76a4ac72d5",
+  "runtimeCodeHash": "0x7f34aedf0cca00646156ac754efa6667c2a8707b9dd61e88b1444b433f52036a"
+}

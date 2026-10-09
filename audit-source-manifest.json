@@ -14,8 +14,40 @@
       "sha256": "6508527d44f8f2a8721278db92e2bf691727a3e1be753255be0e6f48f6c75084"
     },
     {
+      "path": "contracts/IMDCreationController.sol",
+      "sha256": "2e8b86f46dbf8b96a7f3e8997f5b36588f47d271de3a236367bb076acba9ec20"
+    },
+    {
+      "path": "contracts/IMDFeeRouter.sol",
+      "sha256": "30429fb76e87fd23e5a83fab9781c798801ddf43448d42a9f7673556f11f9967"
+    },
+    {
+      "path": "contracts/IMDLaunchHook.sol",
+      "sha256": "4f229c9de672fb96c0306fed3582dd0967a06584fe9100a6b8d811576688cc22"
+    },
+    {
+      "path": "contracts/IMDLaunchSwapRouter.sol",
+      "sha256": "c3ea0a74aa15b0ce6a4efe40efbbe1f19a1228e00d63d13d03fddfbcf1ea9b5a"
+    },
+    {
+      "path": "contracts/IMDReceiptVerifier.sol",
+      "sha256": "9acef4aaf7aff5e64b9758c5d275e3a3173ba72aeade7a690cc5076984b65118"
+    },
+    {
+      "path": "contracts/IMPEPE.sol",
+      "sha256": "425f5cbf925c8a95dea17b09239a74a879475f365f55f9ce1f1052c888ac1cb5"
+    },
+    {
+      "path": "contracts/IMPEPEFeeHook.sol",
+      "sha256": "ae09339a924056ded56264db407ac33eca4b13a4aaab480e0df2a5d1574e8faf"
+    },
+    {
       "path": "contracts/IMPEPEHook.sol",
       "sha256": "cf1613b2d15d64ed456d2a768eaa7ec40e6037abdf53658b1da3fb437b3ad25c"
+    },
+    {
+      "path": "contracts/IMPEPELiquidityBootstrap.sol",
+      "sha256": "e49f291577e73994822c80415a587d7b18a1bac53c8d46108a86ce8ea91e8e9f"
     },
     {
       "path": "contracts/IMPEPESwapRouter.sol",
@@ -47,7 +79,7 @@
     },
     {
       "path": "tests/contracts.test.mjs",
-      "sha256": "e8d3facd44a96b26101b697268eeab1e0c3e0280d6b2a05f617fd6138ae68a99"
+      "sha256": "1059c7090a6bdd975a8f3e07ddec60d186a036572e7e72e9ba7c3dced38f93b3"
     },
     {
       "path": "tests/opening-price.test.mjs",
@@ -59,11 +91,15 @@
     },
     {
       "path": "tests/backend.test.mjs",
-      "sha256": "b340cd430df4a6118a1580cbc0bb533cb128beda412abb6dbb316c67c2c53349"
+      "sha256": "be6f57f1d64ceadc2ae8a8e2c07be88ab4de24d7dcef35069dbf80bc892ac4b8"
     },
     {
       "path": "tests/swap-assets.test.mjs",
       "sha256": "7621160c25200c4252388ef98b96285938e153072b837fa503d79dd5cbfd692b"
+    },
+    {
+      "path": "tests/contracts/IMDTestHarness.sol",
+      "sha256": "91aee41656d447c61a2cec3c5ba574c24a8b3dc7e148dd847268a3ed3bac612e"
     },
     {
       "path": "tests/contracts/TestHarness.sol",
@@ -75,7 +111,7 @@
     },
     {
       "path": "backend/accounting.mjs",
-      "sha256": "f1d0c33deaa6efebfca1b5c762156d51e621d2b107788b2a8aaa648805a104da"
+      "sha256": "f8f8a4bb1c6947462881e54640e816df6262485f391fdb8070c5e122b8d9618b"
     },
     {
       "path": "backend/airdrop-preview.mjs",
@@ -91,15 +127,19 @@
     },
     {
       "path": "backend/attestor.mjs",
-      "sha256": "e53310ab5782abfe6e4c59998bf2c172a352e5f20d90e2e3c27c60a708073c7b"
+      "sha256": "746f8abb2c5fff9069fa38ad14b96160beceeda88d429f618e1bc76f79244a97"
+    },
+    {
+      "path": "backend/automation-config.mjs",
+      "sha256": "13798c7133b1979b76486c4f9036052bac8115f81fa49030de690cd211b7b6ad"
     },
     {
       "path": "backend/config.mjs",
-      "sha256": "d2633b807c319cbf9dafd7f7ab9161166d9e3784a209cf21cf940463694bc202"
+      "sha256": "f0fb31b499674343c9a40dabae13875d65e850411a9e1ae0f159f7af13ca4e5e"
     },
     {
       "path": "backend/creation-input.mjs",
-      "sha256": "85e6d25bccbfaea18d636e55813c4177dc25141df01586213ce1ba0b44575663"
+      "sha256": "969f6146a2f958122a2f31ecb3524fae0969155fb080f71380cad354059718d5"
     },
     {
       "path": "backend/db.mjs",
@@ -115,7 +155,7 @@
     },
     {
       "path": "backend/indexer.mjs",
-      "sha256": "f128fa8fb4ee00d1ebbab70fffbd3affa0c7da7b8b7f6c783bf7e151fe30c7d0"
+      "sha256": "a78df9f07a3ba6efb71a133c92ac0166fafb2647a46135b6575e014e01609b10"
     },
     {
       "path": "backend/jobs.mjs",
@@ -126,6 +166,10 @@
       "sha256": "414f18b66289e95d6f8ae91944943f2c87d236dcf7f20c53e963545ec07d8c65"
     },
     {
+      "path": "backend/manual-creation.mjs",
+      "sha256": "944bea58c9588171659eb62ed5d2d04e66084e5532d7bc5f45ca5ff4cb28232c"
+    },
+    {
       "path": "backend/migrate.mjs",
       "sha256": "0d594adb6517fa794b450df2f9944bfff3d9c19a05588742a11a1de877030654"
     },
@@ -134,28 +178,40 @@
       "sha256": "f7234d942f6e68d9721ecc1c836fdb7272a959f9a21f29d2794e5bce900c56b3"
     },
     {
+      "path": "backend/pool-market.mjs",
+      "sha256": "022689626fba3f49912e36b313b37432573fd681800e5c21ae93aacdb1586ea9"
+    },
+    {
       "path": "backend/schema.sql",
-      "sha256": "88d4c04484498dd85eb8e32c7f9e7a8301869acd0e4961db0fc88dd3f4c089ea"
+      "sha256": "877edd467a9b58b99ffc5c4b20020d7ef71a8bcc7d55aba474ef2bf6b1cf2d84"
+    },
+    {
+      "path": "backend/selection.mjs",
+      "sha256": "d55f3884350d9819ecc698f983ac32016a78bf16a895283c62c85c055cd15fd1"
     },
     {
       "path": "backend/server.mjs",
-      "sha256": "86175891784bf472b00fa9abe9333dff4134804bd05cf58fd9383f9fe1267235"
+      "sha256": "45f9592f46c77fb864b44d43e2ddc3958bb5e4a83472676c78b46950ba36f7bb"
     },
     {
       "path": "backend/service.mjs",
-      "sha256": "ad691c60158a5fef20fe2582176f3ddcac4f09fb2977be2d42d2dd586e8dcf57"
+      "sha256": "ccfb5ba2d9be99ff2cbaedf4bf0ee7d0ec694e24dc9acf8f24c7b68068479634"
     },
     {
       "path": "backend/submit-art.mjs",
       "sha256": "68cffe809ddcbdf7b93a60a0fa5379cc8085d27f714fb1be2c40eda0c6084883"
     },
     {
+      "path": "backend/usd-market.mjs",
+      "sha256": "7295914b7b0470282ebf79076f90d60c07103d3e05e2ad58872e512634fbbee0"
+    },
+    {
       "path": "backend/worker.mjs",
-      "sha256": "737b650a896871fcba63185ec893541983bd4d95aa682b9443fb12ffd463b5ba"
+      "sha256": "c7d53f0d84721459b2696dee6522abba64971e3c13e51fa9f18a2d22fe715803"
     },
     {
       "path": "package.json",
-      "sha256": "61012abf6c1589698a478ae5369959aed800c455479b2a0de588b6c18bd104c1"
+      "sha256": "6b8e35280dcf2c249948f43cab57faea07426819f08916ead7d615b4e034c8c0"
     },
     {
       "path": "package-lock.json",
@@ -167,11 +223,11 @@
     },
     {
       "path": "deployment.json",
-      "sha256": "538e2c8146c79e6081ba51992df128fbdf67c781bc1dd65af94044197f792eeb"
+      "sha256": "64557c685f027a93553490c5b6d006d2ce83119e89bb88d93eaf9d321bceaa78"
     },
     {
       "path": "README.md",
-      "sha256": "849fd34f8689ef56e73c158ea1edd65d4fa2a947ceb84951838e1305996d69ed"
+      "sha256": "bf1b23a5fc158a98fae344a910f859bc6a37ec86813683fac372619122d0e23c"
     },
     {
       "path": "THREAT_MODEL.md",
@@ -179,7 +235,7 @@
     },
     {
       "path": "CONTRACT_FINALIZATION.md",
-      "sha256": "99fdf52e80aad849dc87fdf73866fe7942229061838d8305678f4b42550472d2"
+      "sha256": "9179bafd6342b2034031c9cff3d614f70d4311d0cf6d4fccd4fe63614bb57263"
     },
     {
       "path": "EMERGENCY_MIGRATION.md",
@@ -191,7 +247,7 @@
     },
     {
       "path": "LAUNCH_READINESS.md",
-      "sha256": "1d6d374ee4042f73d03804ddeb32c68f3b8269f50f56eb4342b4ee5f54f683e4"
+      "sha256": "d42c9e10683058cc5d9b0979e847c6329ed56915fa7058d278713728a7e97a05"
     },
     {
       "path": "AUDIT_REMEDIATION.md",
@@ -199,7 +255,7 @@
     },
     {
       "path": "BACKEND_RUNBOOK.md",
-      "sha256": "425dba3e945cba70158efe227ed11c567082c7f242cded33a4498af4c8ae696a"
+      "sha256": "293c4026f139fb70ec0eb8f72cce21011bf832aca61e81a78ca6805bd7a53ba9"
     },
     {
       "path": "scripts/compile.mjs",
@@ -211,7 +267,7 @@
     },
     {
       "path": "scripts/deployment-plan.mjs",
-      "sha256": "23f708de9d20afdd0672c7d71583fc58098f24ca9ea1583d652d6dcfcf16d822"
+      "sha256": "b01ca56d340f1138e6e40ca0b34370f90f51fcf3b58dada413b8b2ceb098a796"
     },
     {
       "path": "scripts/contract-manifest.mjs",
@@ -243,11 +299,11 @@
     },
     {
       "path": "artifacts/compiler-input.json",
-      "sha256": "62a1859cee0b8d40b8d7018c2464add5e5691ea01b256ff4bab49ea84aee4f28"
+      "sha256": "276b2106c1579f86230d4d99b04083e2bbda7966ee6c32513779c473e7166345"
     },
     {
       "path": "artifacts/bytecode-sizes.json",
-      "sha256": "2a2c9927510a330714c36224eec198100e32df1732de75400a748031fdbd7ca5"
+      "sha256": "00c01566cd23aca463576c0c34c0d139d6b7dbec6476678ece47c94bf4695739"
     },
     {
       "path": "artifacts/release-verification.json",

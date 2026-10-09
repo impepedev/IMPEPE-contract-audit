@@ -1,0 +1,18 @@
+{
+  "status": "verified",
+  "chainId": 1,
+  "contract": "IMDLaunchSwapRouter",
+  "contractAddress": "0x3dbee01da73f4ccb8b781424527c67c579c2f718",
+  "transactionHash": "0x3c373e870e11f8a82a6216393ed8f7eba69b3632c60c5c679acb2efc7982a586",
+  "blockNumber": 26156011,
+  "gasUsed": "852290",
+  "runtimeCodeHash": "0x485251ddc7925a002cda78a936408ca5dbf10141f7299008863d5ecc1ed029b7",
+  "constructorArguments": [
+    "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    "0x5108c5507dA225a4582E8629661b5D83d476aaCc"
+  ],
+  "compiler": "0.8.26",
+  "optimizerRuns": 200,
+  "evmVersion": "cancun",
+  "bytecodeHash": "none"
+}

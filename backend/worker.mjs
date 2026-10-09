@@ -2,6 +2,8 @@ import {pathToFileURL} from 'node:url';
 import {Contract,JsonRpcProvider,Wallet,keccak256,toUtf8Bytes,AbiCoder} from 'ethers';import {createPublicClient,http} from 'viem';import {mainnet} from 'viem/chains';import {privateKeyToAccount} from 'viem/accounts';import {toClientEvmSigner} from '@x402/evm';
 import {completeArtwork,reconcileMints} from './submit-art.mjs';
 import {expectedCreationInput} from './creation-input.mjs';
+import {selectionPayload} from './selection.mjs';
+import {automationReadiness} from './automation-config.mjs';
 import {loadConfig} from './config.mjs';import {database} from './db.mjs';import {IMDClient} from './imd.mjs';import {creativeBrief,sha} from './art.mjs';import {canonical,validateChallenge,preparePayment,submitPrepared} from './payment.mjs';import {reserveJob,recordAdmission,persistOutbox,syncRecoveredJob,encrypt,decrypt} from './jobs.mjs';
 const controllerAbi=['function paused() view returns(bool)','function retired() view returns(bool)','function nextJobId() view returns(uint256)','function totalFunded() view returns(uint256)','function jobBudget() view returns(uint256)','function settlementBlocks() view returns(uint256)','function operator() view returns(address)','function paymentRecipient() view returns(address)','function jobs(uint256) view returns(uint64 cutoff,uint64 time,uint256 cursor,uint256 count,address winner,uint256 bestScore,bytes32 requestId,bool selected,bool paid,bool finalized)','function attempts(uint256) view returns(uint256)','function advanceEmptySnapshot()','function openNextJob()','function confirmFinality(bytes)','function scan(uint256)','function payJob()','function bindRequest(bytes32)'];
 async function cycleUnlocked({config,db,provider,wallet,paymentSigner,imd,policy,assertLock=()=>{}}) {
@@ -13,15 +15,29 @@ async function cycleUnlocked({config,db,provider,wallet,paymentSigner,imd,policy
  if((await controller.operator()).toLowerCase()!==wallet.address.toLowerCase()||(await controller.paymentRecipient()).toLowerCase()!==wallet.address.toLowerCase())throw new Error('Operator payment wallet mismatch');
  if(await controller.retired())return {status:'controller_retired_migration_required'};if(await controller.paused())return {status:'creation_paused'};
  if(!config.hookAddress)throw new Error('Fee hook required');const fees=new Contract(config.hookAddress,['function pendingCreation() view returns(uint256)','function pendingProtocol() view returns(uint256)','function flushFees()'],wallet);
- if(await fees.pendingCreation()+await fees.pendingProtocol()>0n)await(await fees.flushFees()).wait();
  const minting=await reconcileMints({db,provider,config,wallet,encryptionKey:policy.encryptionKey,assertLock});if(minting)return minting;
  const id=Number(await controller.nextJobId());if(id>1000)return {status:'collection_complete'};
+ if(id>(config.maxAutonomousTokenId??1000))return {status:'pilot_complete'};
+ if(await fees.pendingCreation()+(config.launchRoute==='imd_standard'?0n:await fees.pendingProtocol())>0n)await(await fees.flushFees()).wait();
  let job=await controller.jobs(id);const budget=await controller.jobBudget();
  if(!job.cutoff){if(await controller.totalFunded()<BigInt(id)*budget)return {status:'awaiting_funding'};await(await controller.openNextJob()).wait();job=await controller.jobs(id);}
  const finalized=await provider.send('eth_getBlockByNumber',['finalized',false]);if(!finalized||BigInt(finalized.number)<job.cutoff)return {status:'awaiting_finality'};
  const latest=await provider.getBlockNumber();if(BigInt(latest)<=job.cutoff+await controller.settlementBlocks())return {status:'awaiting_settlement'};
  if(!job.finalized){if(!policy.finalityUrl)return{status:'finality_attestation_required'};const response=await fetch(`${policy.finalityUrl}?cutoff=${job.cutoff}`,{redirect:'error',headers:{Authorization:`Bearer ${policy.attestorToken||''}`},signal:AbortSignal.timeout(8000)});if(!response.ok)throw new Error('Finality attestation unavailable');const evidence=await response.json();const block=await provider.getBlock(Number(job.cutoff));if(String(evidence.cutoff)!==String(job.cutoff)||evidence.blockHash!==block.hash)throw new Error('Finality attestation mismatch');await(await controller.confirmFinality(AbiCoder.defaultAbiCoder().encode(['bytes32','uint256','bytes'],[evidence.blockHash,evidence.expiresAt,evidence.signature]))).wait();}
- if(!job.selected){await(await controller.scan(125)).wait();job=await controller.jobs(id);if(!job.selected){if(job.cursor===job.count&&job.winner==='0x'+'0'.repeat(40)){try{await controller.advanceEmptySnapshot.staticCall();}catch{return{status:'awaiting_next_funding_snapshot'};}await(await controller.advanceEmptySnapshot()).wait();return{status:'snapshot_advanced'};}return {status:'selecting'};}}
+ if(!job.selected){
+  if(['imd_standard','manual_v4'].includes(config.launchRoute)){
+   if(!policy.selectionUrl)return {status:'selection_attestation_required'};
+   const selection=new Contract(config.controllerAddress,['function selectRecipient(address,uint256,uint256,bytes)','function emptySnapshot(uint256) view returns(bool)'],wallet);
+   if(!await selection.emptySnapshot(id)){
+    const response=await fetch(policy.selectionUrl,{redirect:'error',headers:{Authorization:`Bearer ${policy.attestorToken||''}`},signal:AbortSignal.timeout(60000)});if(!response.ok)throw new Error('Selection attestation unavailable');
+    const evidence=await response.json();const block=await provider.getBlock(Number(job.cutoff));
+    if(String(evidence.tokenId)!==String(id)||String(evidence.cutoff)!==String(job.cutoff)||evidence.token?.toLowerCase()!==config.tokenAddress.toLowerCase()||evidence.blockHash!==block.hash||selectionPayload(evidence)!==evidence.payloadHash)throw new Error('Selection attestation mismatch');
+    await(await selection.selectRecipient(evidence.winner,evidence.balance,evidence.score,AbiCoder.defaultAbiCoder().encode(['uint256','bytes'],[evidence.expiresAt,evidence.signature]))).wait();
+   }
+   job=await controller.jobs(id);
+   if(!job.selected){try{await controller.advanceEmptySnapshot.staticCall();}catch{return{status:'awaiting_next_funding_snapshot'};}await(await controller.advanceEmptySnapshot()).wait();return{status:'snapshot_advanced'};}
+  }else{await(await controller.scan(125)).wait();job=await controller.jobs(id);if(!job.selected){if(job.cursor===job.count&&job.winner==='0x'+'0'.repeat(40)){try{await controller.advanceEmptySnapshot.staticCall();}catch{return{status:'awaiting_next_funding_snapshot'};}await(await controller.advanceEmptySnapshot()).wait();return{status:'snapshot_advanced'};}return {status:'selecting'};}}
+ }
  const attempt=Number(await controller.attempts(id));const confirmedAttempt=Number(await controller.attempts(id,{blockTag:Number(BigInt(finalized.number))}));if(attempt!==confirmedAttempt)return{status:'awaiting_recovery_finality'};const confirmedJob=await controller.jobs(id,{blockTag:Number(BigInt(finalized.number))});if(!confirmedJob.selected||confirmedJob.cutoff!==job.cutoff||confirmedJob.winner!==job.winner)return{status:'awaiting_selection_finality'};await syncRecoveredJob(db,{id,attempt,cutoff:job.cutoff.toString(),recipient:job.winner});
  let row=await reserveJob(db,{id,attempt,cutoff:job.cutoff.toString(),recipient:job.winner});
  const input=await expectedCreationInput(provider,config.collectionAddress,id,policy.artSkill);
@@ -62,9 +78,10 @@ export async function workerCycle(context){
 }
 if(process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href){
  const config=loadConfig();if(!config.liveTransactions){console.log('Worker disabled LIVE_TRANSACTIONS=false');process.exit(0);}
+ if(!automationReadiness(process.env,'worker').ready)throw new Error('Autonomous worker configuration incomplete or signer mismatch');
  const key=process.env.OPERATOR_PRIVATE_KEY;if(!key)throw new Error('Local Operator key required');
  const db=database(config.databaseUrl),provider=new JsonRpcProvider(config.rpcUrl),wallet=new Wallet(key,provider);
  const account=privateKeyToAccount(key);const paymentSigner=toClientEvmSigner(account,createPublicClient({chain:mainnet,transport:http(config.rpcUrl)}));const imd=new IMDClient({token:config.imdPaidToken});
- const policy={artSkill:process.env.IMD_ART_SKILL,payTo:process.env.IMD_PAY_TO,spender:process.env.IMD_PAYMENT_SPENDER,permit2:process.env.PERMIT2_ADDRESS,encryptionKey:process.env.OUTBOX_ENCRYPTION_KEY,finalityUrl:process.env.FINALITY_ATTESTATION_URL,artifactUrl:process.env.ARTIFACT_ATTESTATION_URL,attestorToken:process.env.ATTESTOR_SERVICE_TOKEN,baseGrid:['..........','..........','..........','...GGGG...','...W.W....','...GGGG...','...RRRR...','..........','...GGGG...','...GGGG...']};
+ const policy={artSkill:process.env.IMD_ART_SKILL,payTo:process.env.IMD_PAY_TO,spender:process.env.IMD_PAYMENT_SPENDER,permit2:process.env.PERMIT2_ADDRESS,encryptionKey:process.env.OUTBOX_ENCRYPTION_KEY,finalityUrl:process.env.FINALITY_ATTESTATION_URL,selectionUrl:process.env.SELECTION_ATTESTATION_URL,artifactUrl:process.env.ARTIFACT_ATTESTATION_URL,attestorToken:process.env.ATTESTOR_SERVICE_TOKEN,baseGrid:['..........','..........','..........','...GGGG...','...W.W....','...GGGG...','...RRRR...','..........','...GGGG...','...GGGG...']};
  let stopped=false;process.on('SIGINT',()=>stopped=true);while(!stopped){try{console.log(await workerCycle({config,db,provider,wallet,paymentSigner,imd,policy}));}catch{console.error('Worker cycle halted Review the job and configuration before retrying');}await new Promise(resolve=>setTimeout(resolve,15000));}await db.close();provider.destroy();
 }

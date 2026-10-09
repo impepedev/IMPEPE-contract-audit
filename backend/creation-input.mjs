@@ -5,7 +5,7 @@ export function creationInput(tokenId,skill,history=[]){
  if(typeof skill!=='string'||!skill.trim())throw new Error('APPROVED_ART_SKILL_REQUIRED');
  const brief=creativeBrief(tokenId,baseGrid,history);
  brief.outputManifest={v:1,tokenId,artifactHash:'SHA-256 of raw RGB bytes, lowercase 64 hex',durationMs:'0 for static or 2000-20000 for animation',effect:'0 for static or integer 1-13 for animation',holyGrail:tokenId===1000};
- return {objective:JSON.stringify(brief),skill,github:false,outputs:[{name:'art',path:'artifacts/impepe.rgb',mediaType:'application/octet-stream'},{name:'manifest',path:'artifacts/manifest.json',mediaType:'application/json'}]};
+ return {objective:JSON.stringify(brief),skill,...(skill==='implement-component'?{paths:['artifacts/impepe.rgb','artifacts/manifest.json']}:{}),github:false,outputs:[{name:'art',path:'artifacts/impepe.rgb',mediaType:'application/octet-stream'},{name:'manifest',path:'artifacts/manifest.json',mediaType:'application/json'}]};
 }
 // Both services reconstruct history from committed chain state, never Operator-supplied history
 export async function expectedCreationInput(provider,collectionAddress,tokenId,skill){
